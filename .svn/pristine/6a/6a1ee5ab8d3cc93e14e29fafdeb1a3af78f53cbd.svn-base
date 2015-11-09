@@ -1,0 +1,11 @@
+package m.w.frs.mgserver.service.snapup;
+
+import org.nutz.ioc.loader.annotation.IocBean;
+
+import m.w.core.service.WxIdService;
+import m.w.frs.mgserver.domain.Order;
+
+@IocBean(fields = "dao")
+public class OrderService extends WxIdService<Order> {
+
+}

@@ -1,0 +1,291 @@
+package m.w.frs.mgserver.domain;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.nutz.dao.entity.annotation.ColDefine;
+import org.nutz.dao.entity.annotation.ColType;
+import org.nutz.dao.entity.annotation.Column;
+import org.nutz.dao.entity.annotation.Comment;
+import org.nutz.dao.entity.annotation.Id;
+import org.nutz.dao.entity.annotation.Many;
+import org.nutz.dao.entity.annotation.Table;
+
+import m.w.core.dao.IdEntity;
+import m.w.sys.domain.Constable;
+import m.w.sys.util.WrapSupport;
+
+@Table("tbl_order")
+@Comment("订单表")
+public class Order extends WrapSupport implements Serializable, IdEntity, Constable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8470263626963122171L;
+
+	@Override
+	public Map<String, String> getConstFieldMap() {
+		return new HashMap<String, String>();
+	}
+
+	@Id
+	@Column
+	private Long id;
+
+	@Column
+	private Integer totalCount;
+	
+	@Column
+	private BigDecimal totalPrice;// 价格
+
+	
+	@Many(target = OrderDetail.class, field = "orderId")
+	private List<OrderDetail> orderDetails;
+
+	/** order code */
+	@Column("orderCode")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1000)
+	protected String orderCode;
+
+	/** order 时间 */
+	@Column("orderTime")
+	@ColDefine(notNull = false, type = ColType.DATETIME)
+	protected Date orderTime=new Date();
+
+	/** 提交人 */
+	@Column("submitPerson")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1000)
+	protected String submitPerson;
+
+	/** 审核人 */
+	@Column("reviewerName")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1000)
+	protected String reviewerName;
+
+	/** 收货人 */
+	@Column("receiverInfo")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String receiverInfo;
+
+	/** 收货人 user id */
+	@Column("receiverId")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String receiverId;
+
+	/** 收货人电话 */
+	@Column("receiverPhone")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String receiverPhone;
+
+	/** 状态 */
+	@Column("status")
+	protected Status status=Status.WAITING_PAYMENT;
+
+	/** 类型 */
+	@Column("orderType")
+	protected OrderType orderType;
+
+	/** 支付方式 */
+	@Column("payType")
+	protected PayType payType;
+
+	/** 支付流水号 */
+	@Column("payCode")
+	protected String payCode;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getOrderCode() {
+		return orderCode;
+	}
+
+	public void setOrderCode(String orderCode) {
+		this.orderCode = orderCode;
+	}
+
+	public Date getOrderTime() {
+		return orderTime;
+	}
+
+	public void setOrderTime(Date orderTime) {
+		this.orderTime = orderTime;
+	}
+
+	public String getSubmitPerson() {
+		return submitPerson;
+	}
+
+	public void setSubmitPerson(String submitPerson) {
+		this.submitPerson = submitPerson;
+	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+	
+	public List<OrderDetail> getOrderDetails() {
+		return orderDetails;
+	}
+
+	public void setOrderDetails(List<OrderDetail> orderDetails) {
+		this.orderDetails = orderDetails;
+	}
+
+	
+	public String getReviewerName() {
+		return reviewerName;
+	}
+
+	public void setReviewerName(String reviewerName) {
+		this.reviewerName = reviewerName;
+	}
+
+	public String getReceiverInfo() {
+		return receiverInfo;
+	}
+
+	public void setReceiverInfo(String receiverInfo) {
+		this.receiverInfo = receiverInfo;
+	}
+
+	public String getReceiverId() {
+		return receiverId;
+	}
+
+	public void setReceiverId(String receiverId) {
+		this.receiverId = receiverId;
+	}
+
+	public String getReceiverPhone() {
+		return receiverPhone;
+	}
+
+	public void setReceiverPhone(String receiverPhone) {
+		this.receiverPhone = receiverPhone;
+	}
+
+	public OrderType getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(OrderType orderType) {
+		this.orderType = orderType;
+	}
+
+	public PayType getPayType() {
+		return payType;
+	}
+
+	public void setPayType(PayType payType) {
+		this.payType = payType;
+	}
+
+	public String getPayCode() {
+		return payCode;
+	}
+
+	public void setPayCode(String payCode) {
+		this.payCode = payCode;
+	}
+	
+	public Integer getTotalCount() {
+		return totalCount;
+	}
+
+	public void setTotalCount(Integer totalCount) {
+		this.totalCount = totalCount;
+	}
+
+	public BigDecimal getTotalPrice() {
+		return totalPrice;
+	}
+
+	public void setTotalPrice(BigDecimal totalPrice) {
+		this.totalPrice = totalPrice;
+	}
+
+	public enum Status {
+		PAID(0, "已支付"), WAITING_PAYMENT(1, "待支付"), WAITING_CONFIRM(2, "待确认"), CANCEL(3, "取消支付");
+
+		public final Integer index;
+
+		public final String Value;
+
+		private Status(Integer index, String value) {
+			this.index = index;
+			Value = value;
+		}
+
+		public Integer getIndex() {
+			return index;
+		}
+
+		public String getValue() {
+			return Value;
+		}
+	}
+
+	public enum OrderType {
+		PAID(0, "已支付"), WAITING_PAYMENT(1, "待支付"), CANCEL(2, "取消支付");
+
+		private final Integer index;
+
+		private final String Value;
+
+		private OrderType(Integer index, String value) {
+			this.index = index;
+			Value = value;
+		}
+
+		public Integer getIndex() {
+			return index;
+		}
+
+		public String getValue() {
+			return Value;
+		}
+	}
+
+	public String createOrderCode(){
+		orderCode=receiverId+(new Date().getTime());
+		return orderCode;
+	}
+	public enum PayType {
+		WEIXIN(0), ZHIFUBAO(1);
+
+		private final Integer value;
+
+		PayType(Integer value) {
+			this.value = value;
+		}
+
+		public Integer getValue() {
+			return value;
+		}
+	}
+
+	@Override
+	public String toString() {
+		return "Order [id=" + id + ", orderDetails=" + orderDetails + ", orderCode=" + orderCode + ", orderTime="
+				+ orderTime + ", submitPerson=" + submitPerson + ", reviewerName=" + reviewerName + ", receiverInfo="
+				+ receiverInfo + ", receiverId=" + receiverId + ", receiverPhone=" + receiverPhone + ", status="
+				+ status + ", orderType=" + orderType + ", payType=" + payType + ", payCode=" + payCode + "]";
+	}
+	
+	
+}

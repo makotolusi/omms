@@ -1,0 +1,168 @@
+package m.w.frs.mgserver.service;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import m.w.core.service.WxIdService;
+import m.w.frs.mgserver.domain.Activity;
+import m.w.frs.mgserver.domain.ActivityProductData;
+import m.w.frs.mgserver.domain.OrderDetail;
+import m.w.frs.mgserver.domain.Product;
+import m.w.sys.quartz.domain.PicConfig;
+import m.w.sys.service.PicHandlerService;
+import m.w.sys.util.Consts;
+import m.w.sys.util.RedisManager;
+
+import org.nutz.dao.Cnd;
+import org.nutz.dao.Condition;
+import org.nutz.dao.Dao;
+import org.nutz.dao.pager.Pager;
+import org.nutz.ioc.loader.annotation.Inject;
+import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
+
+@IocBean(fields = "dao")
+public class ActivityProductDataService extends
+		WxIdService<ActivityProductData> {
+
+	private static final Log log = Logs
+			.getLog(ActivityProductDataService.class);
+
+	@Inject
+	private PicHandlerService picHandlerService;
+
+	public Object getActivityProcut(String activityId, String res) {
+
+		List<ActivityProductData> as = this.query(
+				Cnd.where("activityId", "=", activityId).desc("entertime"),
+				null);
+
+		for (ActivityProductData a : as) {
+			String url = picHandlerService.getQiniuPrivateUrl(a.getPicUrl1(),
+					picHandlerService.getPicConfig(res, "rule2"));
+			a.setPicUrl1(url);
+			PicConfig config = new PicConfig("500*500");
+			picHandlerService.getQiniuPrivateUrl(a.getPicUrl1(), config);
+		}
+
+		return as;
+	}
+
+	/**
+	 * 从数据库中查找活动下所有商品list
+	 * 
+	 * @param activityProductData
+	 */
+	public List<ActivityProductData> findActivityProducts(Activity activity) {
+		Cnd cnd = Cnd.limit().and("activityId", "=", activity.getId());
+		return this.query(cnd, null);
+	}
+
+	/**
+	 * 活动添加商品时 需要更新启用的商品到内存
+	 * 
+	 * @param activity
+	 * @param product
+	 */
+	public static void addActivityProductToCache(
+			ActivityProductData activityProductData) {
+		String key = Consts.REDIS_STOCK + activityProductData.getActivityId()
+				+ ":" + activityProductData.getProductCode();
+		Map<String, String> map = new HashMap<>();
+		map.put(OrderDetail.STOCK, activityProductData.getRushQuantity() + "");
+//		map.put(OrderDetail.UNPAID, "");
+		map.put(OrderDetail.PRICE,
+				activityProductData.getRushPrice() == null ? ""
+						: activityProductData.getRushPrice() + "");
+		RedisManager.hmset(key, map);
+	}
+
+	/**
+	 * 活动数据到内存
+	 */
+	public static void initActivityProductsToCache(Dao dao) {
+		Condition cnd=Cnd.where("status", "=", 1);
+		List<ActivityProductData> list=dao.query(ActivityProductData.class, cnd);
+		for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+			ActivityProductData activityProductData = (ActivityProductData) iterator
+					.next();
+			addActivityProductToCache(activityProductData);
+		}
+	}
+	
+	/**
+	 * 清除抢购缓存
+	 * 
+	 * @param activity
+	 * @param product
+	 */
+	public void delActivityProductFromCache(
+			ActivityProductData activityProductData) {
+		String key = Consts.REDIS_STOCK + activityProductData.getActivityId()
+				+ ":" + activityProductData.getProductCode();
+		RedisManager.del(key);
+	}
+
+	/**
+	 * 清除活动下所有抢购缓存
+	 * 
+	 * @param activity
+	 * @param product
+	 */
+	public void delActivityCache(Activity activity) {
+		String key = Consts.REDIS_STOCK + activity.getId();
+		Set<String> keys = RedisManager.keys(key + "*");
+		for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+			String k = (String) iterator.next();
+			RedisManager.del(k);
+		}
+	}
+
+	/**
+	 * 新增活动下所有抢购缓存
+	 * 
+	 * @param activity
+	 * @param product
+	 */
+	public void addActivityToCache(Activity activity) {
+		List<ActivityProductData> activityProductDatas = this
+				.findActivityProducts(activity);
+		for (Iterator iterator = activityProductDatas.iterator(); iterator
+				.hasNext();) {
+			ActivityProductData activityProductData = (ActivityProductData) iterator
+					.next();
+			this.addActivityProductToCache(activityProductData);
+		}
+	}
+
+	/**
+	 * 列出内存中活动的商品
+	 * 
+	 * @param activityId
+	 */
+	public void listActivityProduct(String activityId) {
+		Set<String> keys = RedisManager.keys(Consts.REDIS_STOCK + activityId
+				+ ":*");
+		for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+			String key = (String) iterator.next();
+			log.info("现有活动 key " + key + " 库存与价格 "
+					+ RedisManager.hmget(key, OrderDetail.STOCK, "price"));
+		}
+	}
+	
+	/**
+	 * 购买成功 从内存同步库存数量
+	 * @param productCode
+	 * @param quantity
+	 * @return
+	 */
+	public boolean updateProductStock(String productCode,int quantity) {
+		ActivityProductData  p=this.fetch(Cnd.where("productCode","=",productCode));
+		p.setRushQuantity(quantity);
+		return this.update(p);
+	}
+}

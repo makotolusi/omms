@@ -1,0 +1,89 @@
+修改说明
+1、为tree添加了出id外还可回传多个值到服务器的功能。
+<<<<【1548】
+var _115=$("<ul style=\"display:none\"></ul>").insertAfter(_113);
+_10a(_112,_115[0],{id:node.id},function(){
+if(_115.is(":empty")){
+_115.remove();
+
+>>>>【1548】
+var _115=$("<ul style=\"display:none\"></ul>").insertAfter(_113);
+//ADD BY GNAT
+var _param_ = {id:node.id};
+if(node.attributes && node.attributes.POST_ALL){
+	_param_ = $.extend({}, _param_, node.attributes);
+}
+_10a(_112,_115[0],_param_,function(){
+if(_115.is(":empty")){
+_115.remove();
+
+
+
+
+
+2、为datagrid和treegrid增加了一个列的配置参数showField，用于解决数据库代码字段中文显示的问题。
+<<<<【6978】
+var col=$.extend({},$.parser.parseOptions(this,["field","align","halign","order",{sortable:"boolean",checkbox:"boolean",resizable:"boolean"},{rowspan:"number",colspan:"number",width:"number"}]),{title:(th.html()||undefined),hidden:(th.attr("hidden")?true:undefined),formatter:(th.attr("formatter")?eval(th.attr("formatter")):undefined),styler:(th.attr("styler")?eval(th.attr("styler")):undefined),sorter:(th.attr("sorter")?eval(th.attr("sorter")):undefined)});
+
+>>>【6983】
+var col=$.extend({},$.parser.parseOptions(this,["showField","field","align","halign","order",{sortable:"boolean",checkbox:"boolean",resizable:"boolean"},{rowspan:"number",colspan:"number",width:"number"}]),{title:(th.html()||undefined),hidden:(th.attr("hidden")?true:undefined),formatter:(th.attr("formatter")?eval(th.attr("formatter")):undefined),styler:(th.attr("styler")?eval(th.attr("styler")):undefined),sorter:(th.attr("sorter")?eval(th.attr("sorter")):undefined)});
+
+
+
+<<<<【8696】
+if(col.checkbox){
+cc.push("<input type=\"checkbox\" name=\""+_643+"\" value=\""+(_644!=undefined?_644:"")+"\"/>");
+}else{
+if(col.formatter){
+cc.push(col.formatter(_644,_641,_640));
+}else{
+cc.push(_644);
+}
+
+>>>【8701】
+if(col.checkbox){
+cc.push("<input type=\"checkbox\" name=\""+_643+"\" value=\""+(_644!=undefined?_644:"")+"\"/>");
+}else{
+if(col.formatter){
+cc.push(col.formatter(_644,_641,_640));
+}else if(col.showField){//ADD BY GNAT [_641 = rowData]
+	cc.push(_641[col.showField]);
+}else{
+cc.push(_644);
+}
+
+
+
+>>>【9906】
+if(col.checkbox){
+if(row.checked){
+cc.push("<input type=\"checkbox\" checked=\"checked\"");
+}else{
+cc.push("<input type=\"checkbox\"");
+}
+cc.push(" name=\""+_761+"\" value=\""+(row[_761]!=undefined?row[_761]:"")+"\"/>");
+}else{
+var val=null;
+if(col.formatter){
+val=col.formatter(row[_761],row);
+}else{
+val=row[_761];
+}
+
+>>>【9913】
+if(col.checkbox){
+if(row.checked){
+cc.push("<input type=\"checkbox\" checked=\"checked\"");
+}else{
+cc.push("<input type=\"checkbox\"");
+}
+cc.push(" name=\""+_761+"\" value=\""+(row[_761]!=undefined?row[_761]:"")+"\"/>");
+}else{
+var val=null;
+if(col.formatter){
+val=col.formatter(row[_761],row);
+}else if(col.showField){//ADD BY GNAT
+val=row[col.showField];
+}else{
+val=row[_761];
+}

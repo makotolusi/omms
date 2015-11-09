@@ -1,0 +1,34 @@
+package m.w.frs.mgserver.service;
+
+import java.util.List;
+
+import m.w.core.service.WxIdService;
+import m.w.frs.mgserver.domain.ActivityProductData;
+import m.w.sys.service.PicHandlerService;
+
+import org.nutz.dao.Cnd;
+import org.nutz.ioc.loader.annotation.Inject;
+import org.nutz.ioc.loader.annotation.IocBean;
+
+@IocBean(fields = "dao")
+public class ActivityProductDataService extends
+		WxIdService<ActivityProductData> {
+
+	@Inject
+	private PicHandlerService picHandlerService;
+
+	public Object getActivityProcut(String activityId, String res) {
+
+		List<ActivityProductData> as = this.query(
+				Cnd.where("activityId", "=", activityId).desc("entertime"),
+				null);
+
+		for (ActivityProductData a : as) {
+			String url = picHandlerService.getQiniuPrivateUrl(a.getPicUrl1(),
+					res, "rule2");
+			a.setPicUrl1(url);
+		}
+
+		return as;
+	}
+}

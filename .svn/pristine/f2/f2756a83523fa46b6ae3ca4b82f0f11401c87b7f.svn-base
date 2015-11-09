@@ -1,0 +1,51 @@
+package m.w.frs.mgserver.module;
+
+import m.w.core.dto.DataGrid;
+import m.w.core.dto.Result;
+import m.w.frs.mgserver.service.AgentService;
+import m.w.sys.domain.CommerceUser;
+import m.w.sys.domain.CommerceUser.Role;
+import m.w.sys.service.CommerceUserService;
+
+import org.apache.commons.lang3.StringUtils;
+import org.nutz.dao.Cnd;
+import org.nutz.ioc.loader.annotation.Inject;
+import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.mvc.annotation.At;
+
+@At("/commerceuser")
+@IocBean
+public class CommerceUserModule {
+
+	@Inject
+	private CommerceUserService commerceUserService;
+
+
+	@Inject
+	private AgentService agentService;
+	
+	/**
+	 * list order info
+	 * */
+	@At({ "/items" })
+	public DataGrid items(String phoneNum) {
+		if (StringUtils.isEmpty(phoneNum))
+			return commerceUserService.datagrid();
+		else
+			return commerceUserService.datagrid(Cnd.where("phoneNum", "=",
+					phoneNum));
+	}
+
+	@At({ "/updateRole" })
+	public Result updateRole(Long id, CommerceUser.Role role) {
+		CommerceUser user = commerceUserService.fetch(id);
+		if (user != null) {
+			user.setRole(role);
+			commerceUserService.save(user);
+			if(role==Role.MEMBER){
+				agentService.clear(Cnd.where("agentId","=",id));
+			}
+		}
+		return Result.ok();
+	}
+}

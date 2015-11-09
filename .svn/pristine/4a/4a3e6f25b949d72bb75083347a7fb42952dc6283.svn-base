@@ -1,0 +1,182 @@
+package m.w.frs.mgserver.module;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import m.w.core.dto.DataGrid;
+import m.w.core.dto.Result;
+import m.w.core.util.Queries;
+import m.w.frs.mg.Utils;
+import m.w.frs.mgserver.domain.ActivityProductData;
+import m.w.frs.mgserver.domain.Product;
+import m.w.frs.mgserver.service.ActivityProductDataService;
+import m.w.frs.mgserver.service.ProductService;
+import m.w.mg.sso.util.UserUtils;
+import m.w.sys.service.PicHandlerService;
+
+import org.nutz.dao.Cnd;
+import org.nutz.dao.pager.Pager;
+import org.nutz.ioc.loader.annotation.Inject;
+import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.mvc.annotation.At;
+import org.nutz.mvc.annotation.DELETE;
+import org.nutz.mvc.annotation.Ok;
+import org.nutz.mvc.annotation.POST;
+import org.nutz.mvc.annotation.Param;
+
+@At("/productMaintenance")
+@IocBean
+public class ProductMaintenanceModule {
+
+	@Inject
+	private ProductService productService;
+
+	@Inject
+	private PicHandlerService picHandlerService;
+
+	@Inject
+	private ActivityProductDataService activityProductDataService;
+
+	private static final String PS = "/page/productmaintenance";
+
+	/** 打开主页面 */
+	@At
+	@Ok("jsp:" + PS + "/index")
+	public void index() {
+
+	}
+
+	/** 新增公共关系-页面 */
+	@At({ "/add", "/add/?" })
+	@Ok("jsp:" + PS + "/add")
+	public Object add(String type, Long id) {
+
+		if (id != null) {
+			return productService.fetch(id);
+		}
+		Product queryObj = new Product();
+		queryObj.setSystemName("乐果极客");
+
+		queryObj.setProductCode("A00001");
+		queryObj.setName("极品羊油草莓");
+		// queryObj.setPrice(69);
+		return queryObj;
+	}
+
+	/** 新增 */
+	@At
+	@POST
+	public Object save(@Param("..") Product addObject) {
+		addObject.setEntertime(new Date());
+		addObject.setUsername(UserUtils.CurrentUser().getUsername());
+		if (addObject.getId() == null) {
+
+			return productService.insert(addObject, "操作成功", "操作失败");
+		}
+		Product queryObj = productService.fetch(addObject.getId());
+		String productCode = queryObj.getProductCode();
+		Utils.copyFieldValue(queryObj, addObject);
+		queryObj.setProductCode(productCode);
+		return productService.update(queryObj, "操作成功", "操作失败");
+	}
+
+	/** 观看bid记录 */
+	@At({ "/viewstartbidrecord", "/viewstartbidrecord/?" })
+	@Ok("jsp:" + PS + "/_viewpopupform")
+	public Object viewstartbidrecord(Long id) {
+
+		if (id != null) {
+			return productService.fetch(id);
+		}
+		Product queryObj = new Product();
+		return queryObj;
+	}
+
+	/**  */
+	@At({ "/items", "/items/?/?" })
+	public DataGrid items() {
+		return productService.datagrid();
+	}
+
+	/**  */
+	@At({ "/productCodeUnique" })
+	public Map<String, Object> productCodeUnique(String productCode) {
+		Map<String, Object> m = new HashMap<>();
+		List<Product> products = productService.query(
+				Cnd.where("productCode", "=", productCode), new Pager());
+		if (products.isEmpty()) {
+			m.put("unique", true);
+		} else {
+			m.put("unique", false);
+		}
+		return m;
+	}
+
+	/**  */
+	@At({ "/itemsExcludeActivity/?" })
+	public DataGrid itemsExcludeActivity(Long activityId) {
+		List<ActivityProductData> activityProducts = activityProductDataService
+				.query(Cnd.limit().and("activityId", "=", activityId),
+						new Pager());
+		List<String> productCodes = new ArrayList<>();
+		for (Iterator iterator = activityProducts.iterator(); iterator
+				.hasNext();) {
+			ActivityProductData activityProductData = (ActivityProductData) iterator
+					.next();
+			productCodes.add(activityProductData.getProductCode());
+		}
+		Cnd cnd = Cnd.limit().and("productCode", "not in ", productCodes);
+		// DataGrid dg = activityProductDataService.datagrid(false, cnd);
+		Pager pager = Queries.pagerForExt(false);
+		cnd = Queries.make(cnd, true, Product.class, "id", "desc");
+		DataGrid d = productService.datagrid(cnd, pager);
+		return d;
+	}
+
+	/**  */
+	@At({ "/convertUrl" })
+	public Map<String, String> getById(String url) {
+		Map<String, String> m = new HashMap<>();
+		m.put("url", picHandlerService.getQiniuPrivateUrl(url));
+		return m;
+
+	}
+
+	public static void main(String[] args) {
+
+	}
+
+	/**  */
+	@At({ "/itemsforext", "/itemsforext/?/?" })
+	public DataGrid itemsForExt() {
+		Pager pager = Queries.pagerForExt(false);
+		Cnd cnd = Queries.make(Product.class, "id", "desc");
+		// DataGrid dg=productService.datagrid(cnd, pager);
+		// List<Product> list=new LinkedList();
+		// for (Product p : (LinkedList<Product>)dg.getRows()) {
+		// switch (Product.CURRENCY.valueOf(p.getCurrency())) {
+		// case JP:
+		// p.setPriceFormat(Product.CURRENCY.JP.getValue()+" "+p.getPrice());
+		// break;
+		//
+		// default:
+		// break;
+		// }
+		// list.add(p);
+		// }
+		// dg.setRows(list);
+		return productService.datagrid(cnd, pager);
+
+	}
+
+	/** 删除记录 */
+	@At({ "/delete", "/delete/?" })
+	@DELETE
+	public Result delete(Long id) {
+		return productService.delete(id, "删除成功", "删除失败");
+	}
+}

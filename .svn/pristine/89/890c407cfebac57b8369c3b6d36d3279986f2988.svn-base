@@ -1,0 +1,96 @@
+package m.w.frs.mgserver.module;
+
+import java.math.BigDecimal;
+import java.util.Iterator;
+import java.util.List;
+
+import m.w.core.dto.DataGrid;
+import m.w.core.dto.Result;
+import m.w.frs.mgserver.domain.Order;
+import m.w.frs.mgserver.service.AgentService;
+import m.w.frs.mgserver.service.snapup.OrderService;
+import m.w.sys.domain.CommerceUser;
+import m.w.sys.domain.CommerceUser.Role;
+import m.w.sys.domain.CommerceUserAgentConfig;
+import m.w.sys.service.CommerceUserService;
+
+import org.nutz.dao.Cnd;
+import org.nutz.dao.pager.Pager;
+import org.nutz.ioc.loader.annotation.Inject;
+import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.mvc.annotation.At;
+
+@At("/agent")
+@IocBean
+public class AgentModule {
+
+	@Inject
+	private AgentService agentService;
+
+	@Inject
+	private CommerceUserService commerceUserService;
+
+	@Inject
+	private OrderService orderService;
+	
+	/**
+	 * list order info
+	 * */
+	@At({ "/items" })
+	public DataGrid items() {
+		DataGrid dg = agentService.datagrid();
+		List<CommerceUserAgentConfig> agents = (List<CommerceUserAgentConfig>) dg
+				.getRows();
+		for (Iterator iterator = agents.iterator(); iterator.hasNext();) {
+			CommerceUserAgentConfig commerceUserAgentConfig = (CommerceUserAgentConfig) iterator
+					.next();
+			commerceUserAgentConfig = agentService.dao().fetchLinks(
+					commerceUserAgentConfig, "commerceUser");
+			BigDecimal total=new BigDecimal(0);
+			List<Order> orders=orderService.query(Cnd.where("agentId", "=", commerceUserAgentConfig.getCommerceUser().getPhoneNum()).and("status", "=", Order.Status.PAID.toString()),new Pager());
+			for (Iterator iterator2 = orders.iterator(); iterator2.hasNext();) {
+				Order order = (Order) iterator2.next();
+				total=total.add(order.getTotalPrice());
+			}
+			commerceUserAgentConfig.setProfit(total.multiply(commerceUserAgentConfig.getProfitRatio()));
+		}
+		dg.setRows(agents);
+		return dg;
+	}
+
+	@At({ "/save" })
+	public Result save(Long agentId, float profitRatio) {
+		CommerceUserAgentConfig config = agentService.fetch(Cnd.where(
+				"agentId", "=", agentId));
+		if (config != null) {
+			config.setProfitRatio(new BigDecimal(profitRatio));
+		} else {
+			// insert
+			config = new CommerceUserAgentConfig(agentId, new BigDecimal(profitRatio));
+		}
+		agentService.save(config);
+		CommerceUser user = commerceUserService.fetch(agentId);
+		user.setRole(Role.AGENT);
+		commerceUserService.save(user);
+		return Result.ok();
+	}
+
+	@At({ "/updateStutus" })
+	public Result updateStutus(Long agentId,
+			CommerceUserAgentConfig.Status status) {
+		CommerceUserAgentConfig config = agentService.fetch(Cnd.where(
+				"agentId", "=", agentId));
+		if (config != null) {
+			config.setStatus(status);
+			agentService.save(config);
+		}
+		return Result.ok();
+	}
+
+	@At({ "/delete/?" })
+	public Result delete(Long agentId) {
+		agentService.dao().clear(CommerceUserAgentConfig.class,
+				Cnd.where("agentId", "=", agentId));
+		return Result.ok();
+	}
+}

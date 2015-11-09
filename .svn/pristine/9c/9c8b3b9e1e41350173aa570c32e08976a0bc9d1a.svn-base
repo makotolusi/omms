@@ -1,0 +1,220 @@
+package m.w.frs.mgserver.domain;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.nutz.dao.entity.annotation.ColDefine;
+import org.nutz.dao.entity.annotation.ColType;
+import org.nutz.dao.entity.annotation.Column;
+import org.nutz.dao.entity.annotation.Comment;
+import org.nutz.dao.entity.annotation.Id;
+import org.nutz.dao.entity.annotation.Index;
+import org.nutz.dao.entity.annotation.Table;
+import org.nutz.dao.entity.annotation.TableIndexes;
+
+import m.w.core.dao.IdEntity;
+import m.w.sys.domain.Constable;
+import m.w.sys.util.WrapSupport;
+
+/**
+ * {
+"platfrom":1,
+"os":"Android 4.3",
+"channel":""
+}
+ * **/
+@Table("commerce_user_token")
+@Comment("设备token表")
+@TableIndexes({ @Index(name = "token_index", fields = { "token" }, unique = true) })
+public class UserToken extends WrapSupport implements Serializable, IdEntity, Constable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1746446272274708626L;
+
+	@Id
+	@Column
+	private Long id; // 令牌id
+
+	@Column
+	private Long commerceUserId; // 令牌id
+	
+	@Column("token")
+	@ColDefine(notNull = true, type = ColType.VARCHAR, width = 45)
+	private String token; // 令牌值
+
+	@Column("createDate")
+	@ColDefine(notNull = true, type = ColType.DATETIME)
+	private Date createDate = new Date(); // 创建时间
+
+	@Column("platform")
+	private int platform; // 令牌来源
+
+	@Column("lastReqDate")
+	@ColDefine(notNull = true, type = ColType.DATETIME)
+	private Date lastReqDate = new Date(); // 最近请求时间
+
+	@Column("reqCount")
+	private int reqCount=0; // 请求次数
+
+	@Column("status")
+	private int status=Status.NORMAL.value; // 令牌状态
+
+	@Column("os")
+	@ColDefine(notNull = true, type = ColType.VARCHAR, width = 45)
+	private String os; // 操作系统
+
+	@Column("resolutionId")
+	private Long resolutionId; // 设备分辨率
+
+	@Column("channel")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 45)
+	private String channel = ""; // 所属渠道
+
+	@Column("deviceName")
+	private String deviceName;
+	
+	@Column("resolution")
+	private String resolution; // 设备分辨率
+	
+	
+	public String getResolution() {
+		return resolution;
+	}
+
+	public void setResolution(String resolution) {
+		this.resolution = resolution;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
+	@Override
+	public Map<String, String> getConstFieldMap() {
+		Map<String, String> fm = new HashMap<String, String>();
+		return fm;
+	}
+
+	public int getPlatform() {
+		return platform;
+	}
+
+	public void setPlatform(int platform) {
+		this.platform = platform;
+	}
+
+	public Date getLastReqDate() {
+		return lastReqDate;
+	}
+
+	public void setLastReqDate(Date lastReqDate) {
+		this.lastReqDate = lastReqDate;
+	}
+
+	public int getReqCount() {
+		return reqCount;
+	}
+
+	public void setReqCount(int reqCount) {
+		this.reqCount = reqCount;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public String getOs() {
+		return os;
+	}
+
+	public void setOs(String os) {
+		this.os = os;
+	}
+
+	public Long getResolutionId() {
+		return resolutionId;
+	}
+
+	public void setResolutionId(Long resolutionId) {
+		this.resolutionId = resolutionId;
+	}
+
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
+
+	public Long getId() {
+		return id;
+	}
+	
+	public String getDeviceName() {
+		return deviceName;
+	}
+
+	public void setDeviceName(String deviceName) {
+		this.deviceName = deviceName;
+	}
+
+	public Long getCommerceUserId() {
+		return commerceUserId;
+	}
+
+	public void setCommerceUserId(Long commerceUserId) {
+		this.commerceUserId = commerceUserId;
+	}
+
+	public enum Status {
+		FORBIDDEN(0), NORMAL(1);
+
+		private final Integer value;
+
+		Status(Integer value) {
+			this.value = value;
+		}
+
+		public Integer getValue() {
+			return value;
+		}
+	}
+	public enum Platform {
+		IOS(0), ANDROID(1);
+
+		private final Integer value;
+
+		Platform(Integer value) {
+			this.value = value;
+		}
+
+		public Integer getValue() {
+			return value;
+		}
+	}
+}

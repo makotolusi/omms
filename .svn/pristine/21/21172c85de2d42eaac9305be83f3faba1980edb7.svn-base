@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+  "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+
+<taglib>
+
+	<tlib-version>1.1.2</tlib-version>
+
+	<jsp-version>1.2</jsp-version>
+
+	<short-name>WX</short-name>
+
+	<uri>http://wx.w.m/tags</uri>
+
+	<description>WX JSP Tag Library.</description>
+
+	<!-- 权限控制用标签-->
+	<tag>
+		<name>hp</name>
+		<tag-class>m.w.tags.HasPermissionTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>仅在当前用户具有指定权限时才显示主体内容</description>
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>hap</name>
+		<tag-class>m.w.tags.HasAnyPermissionsTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>仅在当前用户至少具有其中一个权限时才显示主体内容</description>
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>hep</name>
+		<tag-class>m.w.tags.HasEachPermissionsTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>仅在当前用户具有所有指定权限时才显示主体内容</description>
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>lp</name>
+		<tag-class>m.w.tags.LacksPermissionTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>仅在当前用户不具有指定权限时才显示主体内容</description>
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>hr</name>
+		<tag-class>m.w.tags.HasRoleTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>仅在当前用户具有指定角色时才显示主体内容</description>
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+
+	<tag>
+		<name>har</name>
+		<tag-class>m.w.tags.HasAnyRolesTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>仅在当前用户至少具有其中一个角色时才显示主体内容</description>
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>her</name>
+		<tag-class>m.w.tags.HasEachRolesTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>仅在当前用户具有所有指定角色时才显示主体内容</description>
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>lr</name>
+		<tag-class>m.w.tags.LacksRoleTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>仅在当前用户缺少指定角色时才显示主体内容</description>
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<!-- 日期时间处理用函数 -->
+	<function>
+		<name>date</name>
+		<function-class>m.w.tags.DateTag</function-class>
+		<function-signature>java.lang.String date(java.util.Date)</function-signature>
+	</function>
+
+	<function>
+		<name>datetime</name>
+		<function-class>m.w.tags.DateTag</function-class>
+		<function-signature>java.lang.String datetime(java.util.Date)</function-signature>
+	</function>
+
+	<function>
+		<name>now</name>
+		<function-class>m.w.tags.DateTag</function-class>
+		<function-signature>java.lang.String now()</function-signature>
+	</function>
+
+	<function>
+		<name>today</name>
+		<function-class>m.w.tags.DateTag</function-class>
+		<function-signature>java.lang.String today()</function-signature>
+	</function>
+
+	<!-- 选择框用函数 -->
+	<function>
+		<name>checked</name>
+		<function-class>m.w.tags.CheckTag</function-class>
+		<function-signature>java.lang.String checked(boolean)</function-signature>
+	</function>
+</taglib>

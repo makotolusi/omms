@@ -1,0 +1,158 @@
+2015-08-20 14:41:17,915 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-08-20 14:41:36,735 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-08-21 11:56:04,875 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-08-21 11:56:59,493 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-08-21 11:57:13,845 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-08-21 11:57:21,493 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-08-21 12:05:17,341 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-08-21 12:06:04,025 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-08-21 12:08:08,613 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-08-21 12:08:41,199 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-08-21 12:09:01,471 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-08-21 12:09:46,813 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-08-21 16:55:46,055 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-08-21 16:56:17,145 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-08-27 17:28:59,413 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-08-28 17:10:31,313 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-09-07 10:19:47,854 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-09-07 10:19:49,274 [main] DEBUG org.nutz.ioc.loader.annotation.AnnotationIocLoader - Found a Class with Ioc-Annotation : class m.w.frs.mgserver.service.snapup.ActivitySnappingUpService
+2015-09-07 10:19:49,274 [main] DEBUG org.nutz.ioc.loader.annotation.AnnotationIocLoader - Found a Class with Ioc-Annotation : class m.w.frs.mgserver.service.snapup.OrderService
+2015-09-07 10:19:49,337 [main] INFO  org.nutz.ioc.loader.annotation.AnnotationIocLoader - Scan complete ! Found 2 classes in 1 base-packages!
+beans = ["orderService", "activitySnappingUpService"]
+2015-09-07 10:19:49,337 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'orderService'<class m.w.frs.mgserver.service.snapup.OrderService>
+2015-09-07 10:19:49,337 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:19:49,337 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Make...'orderService'<class m.w.frs.mgserver.service.snapup.OrderService>
+2015-09-07 10:19:49,353 [main] DEBUG org.nutz.ioc.aop.impl.DefaultMirrorFactory - class m.w.frs.mgserver.service.snapup.OrderService , no config to enable AOP.
+2015-09-07 10:19:49,353 [main] DEBUG org.nutz.ioc.impl.ScopeContext - Save object 'orderService' to [app] 
+2015-09-07 10:19:49,353 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'dao'<null>
+2015-09-07 10:19:49,353 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:19:49,353 [main] DEBUG org.nutz.ioc.impl.ScopeContext - Remove object 'orderService' from [app] 
+2015-09-07 10:20:35,709 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-09-07 10:20:36,804 [main] DEBUG org.nutz.ioc.loader.annotation.AnnotationIocLoader - Found a Class with Ioc-Annotation : class m.w.frs.mgserver.service.snapup.ActivitySnappingUpService
+2015-09-07 10:20:36,820 [main] DEBUG org.nutz.ioc.loader.annotation.AnnotationIocLoader - Found a Class with Ioc-Annotation : class m.w.frs.mgserver.service.snapup.OrderService
+2015-09-07 10:20:36,868 [main] INFO  org.nutz.ioc.loader.annotation.AnnotationIocLoader - Scan complete ! Found 2 classes in 1 base-packages!
+beans = ["orderService", "activitySnappingUpService"]
+2015-09-07 10:20:36,883 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'orderService'<class m.w.frs.mgserver.service.snapup.OrderService>
+2015-09-07 10:20:36,883 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:20:36,883 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Make...'orderService'<class m.w.frs.mgserver.service.snapup.OrderService>
+2015-09-07 10:20:36,883 [main] DEBUG org.nutz.ioc.aop.impl.DefaultMirrorFactory - class m.w.frs.mgserver.service.snapup.OrderService , no config to enable AOP.
+2015-09-07 10:20:36,883 [main] DEBUG org.nutz.ioc.impl.ScopeContext - Save object 'orderService' to [app] 
+2015-09-07 10:20:36,883 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'dao'<null>
+2015-09-07 10:20:36,883 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:20:36,883 [main] DEBUG org.nutz.ioc.impl.ScopeContext - Remove object 'orderService' from [app] 
+2015-09-07 10:21:29,716 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-09-07 10:21:30,799 [main] DEBUG org.nutz.ioc.loader.annotation.AnnotationIocLoader - Found a Class with Ioc-Annotation : class m.w.frs.mgserver.service.snapup.ActivitySnappingUpService
+2015-09-07 10:21:30,814 [main] DEBUG org.nutz.ioc.loader.annotation.AnnotationIocLoader - Found a Class with Ioc-Annotation : class m.w.frs.mgserver.service.snapup.OrderService
+2015-09-07 10:21:30,862 [main] INFO  org.nutz.ioc.loader.annotation.AnnotationIocLoader - Scan complete ! Found 2 classes in 1 base-packages!
+beans = ["orderService", "activitySnappingUpService"]
+2015-09-07 10:21:30,862 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'orderService'<class m.w.frs.mgserver.service.snapup.OrderService>
+2015-09-07 10:21:30,862 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:21:30,862 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Make...'orderService'<class m.w.frs.mgserver.service.snapup.OrderService>
+2015-09-07 10:21:30,878 [main] DEBUG org.nutz.ioc.aop.impl.DefaultMirrorFactory - class m.w.frs.mgserver.service.snapup.OrderService , no config to enable AOP.
+2015-09-07 10:21:30,878 [main] DEBUG org.nutz.ioc.impl.ScopeContext - Save object 'orderService' to [app] 
+2015-09-07 10:21:30,878 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'dao'<null>
+2015-09-07 10:21:30,878 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:21:30,878 [main] DEBUG org.nutz.ioc.impl.ScopeContext - Remove object 'orderService' from [app] 
+2015-09-07 10:22:14,477 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-09-07 10:22:17,554 [main] WARN  org.nutz.ioc.loader.annotation.AnnotationIocLoader - NONE Annotation-Class found!! Check your configure or report a bug!! packages=[m.w.frs.mgserver.*]
+2015-09-07 10:22:19,569 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'orderService'<class m.w.frs.mgserver.service.snapup.OrderService>
+2015-09-07 10:22:19,569 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:24:42,180 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-09-07 10:24:45,277 [main] WARN  org.nutz.ioc.loader.annotation.AnnotationIocLoader - NONE Annotation-Class found!! Check your configure or report a bug!! packages=[m.w.frs.mgserver.*]
+2015-09-07 10:24:55,810 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'orderService'<class m.w.frs.mgserver.service.snapup.OrderService>
+2015-09-07 10:24:55,810 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:25:38,788 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-09-07 10:25:41,805 [main] WARN  org.nutz.ioc.loader.annotation.AnnotationIocLoader - NONE Annotation-Class found!! Check your configure or report a bug!! packages=[m.*]
+2015-09-07 10:25:57,914 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'orderService'<class m.w.frs.mgserver.service.snapup.OrderService>
+2015-09-07 10:25:57,914 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:28:20,619 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-09-07 10:28:21,730 [main] WARN  org.nutz.ioc.loader.annotation.AnnotationIocLoader - NONE Annotation-Class found!! Check your configure or report a bug!! packages=[m.*]
+2015-09-07 10:28:21,745 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'activitySnappingUpService'<class m.w.frs.mgserver.service.snapup.ActivitySnappingUpService>
+2015-09-07 10:28:21,745 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:29:27,204 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-09-07 10:29:28,297 [main] WARN  org.nutz.ioc.loader.annotation.AnnotationIocLoader - NONE Annotation-Class found!! Check your configure or report a bug!! packages=[m.*]
+2015-09-07 10:32:38,708 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'activitySnappingUpService'<class m.w.frs.mgserver.service.snapup.ActivitySnappingUpService>
+2015-09-07 10:32:38,724 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:32:46,048 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-09-07 10:32:47,113 [main] WARN  org.nutz.ioc.loader.annotation.AnnotationIocLoader - NONE Annotation-Class found!! Check your configure or report a bug!! packages=[m.*]
+2015-09-07 10:32:47,129 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'activitySnappingUpService'<class m.w.frs.mgserver.service.snapup.ActivitySnappingUpService>
+2015-09-07 10:32:47,129 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:32:58,486 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-09-07 10:32:59,549 [main] WARN  org.nutz.ioc.loader.annotation.AnnotationIocLoader - NONE Annotation-Class found!! Check your configure or report a bug!! packages=[m.*]
+2015-09-07 10:32:59,549 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'activitySnappingUpService'<class m.w.frs.mgserver.service.snapup.ActivitySnappingUpService>
+2015-09-07 10:32:59,549 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:33:03,510 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-09-07 10:33:04,633 [main] WARN  org.nutz.ioc.loader.annotation.AnnotationIocLoader - NONE Annotation-Class found!! Check your configure or report a bug!! packages=[m.*]
+2015-09-07 10:34:47,262 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-09-07 10:34:48,389 [main] DEBUG org.nutz.ioc.loader.annotation.AnnotationIocLoader - Found a Class with Ioc-Annotation : class m.w.frs.mgserver.service.snapup.OrderService
+2015-09-07 10:34:48,404 [main] DEBUG org.nutz.ioc.loader.annotation.AnnotationIocLoader - Found a Class with Ioc-Annotation : class m.w.frs.mgserver.service.snapup.ActivitySnappingUpService
+2015-09-07 10:34:48,452 [main] INFO  org.nutz.ioc.loader.annotation.AnnotationIocLoader - Scan complete ! Found 2 classes in 1 base-packages!
+beans = ["orderService", "activitySnappingUpService"]
+2015-09-07 10:35:07,569 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'activitySnappingUpService'<class m.w.frs.mgserver.service.snapup.ActivitySnappingUpService>
+2015-09-07 10:35:07,569 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:35:07,585 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Make...'activitySnappingUpService'<class m.w.frs.mgserver.service.snapup.ActivitySnappingUpService>
+2015-09-07 10:35:07,600 [main] DEBUG org.nutz.ioc.aop.impl.DefaultMirrorFactory - class m.w.frs.mgserver.service.snapup.ActivitySnappingUpService , no config to enable AOP.
+2015-09-07 10:35:07,617 [main] DEBUG org.nutz.ioc.impl.ScopeContext - Save object 'activitySnappingUpService' to [app] 
+2015-09-07 10:35:07,617 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'orderService'<null>
+2015-09-07 10:35:07,617 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:35:07,617 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Make...'orderService'<null>
+2015-09-07 10:35:07,632 [main] DEBUG org.nutz.ioc.aop.impl.DefaultMirrorFactory - class m.w.frs.mgserver.service.snapup.OrderService , no config to enable AOP.
+2015-09-07 10:35:07,632 [main] DEBUG org.nutz.ioc.impl.ScopeContext - Save object 'orderService' to [app] 
+2015-09-07 10:35:07,632 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'dao'<null>
+2015-09-07 10:35:07,632 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:35:07,632 [main] DEBUG org.nutz.ioc.impl.ScopeContext - Remove object 'orderService' from [app] 
+2015-09-07 10:35:07,632 [main] DEBUG org.nutz.ioc.impl.ScopeContext - Remove object 'activitySnappingUpService' from [app] 
+2015-09-07 10:37:59,357 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-09-07 10:38:00,474 [main] DEBUG org.nutz.ioc.loader.annotation.AnnotationIocLoader - Found a Class with Ioc-Annotation : class m.w.frs.mgserver.service.snapup.ActivitySnappingUpService
+2015-09-07 10:38:00,474 [main] DEBUG org.nutz.ioc.loader.annotation.AnnotationIocLoader - Found a Class with Ioc-Annotation : class m.w.frs.mgserver.service.snapup.OrderService
+2015-09-07 10:38:00,553 [main] INFO  org.nutz.ioc.loader.annotation.AnnotationIocLoader - Scan complete ! Found 2 classes in 2 base-packages!
+beans = ["orderService", "activitySnappingUpService"]
+2015-09-07 10:38:00,553 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'activitySnappingUpService'<class m.w.frs.mgserver.service.snapup.ActivitySnappingUpService>
+2015-09-07 10:38:00,553 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:38:00,553 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Make...'activitySnappingUpService'<class m.w.frs.mgserver.service.snapup.ActivitySnappingUpService>
+2015-09-07 10:38:00,553 [main] DEBUG org.nutz.ioc.aop.impl.DefaultMirrorFactory - class m.w.frs.mgserver.service.snapup.ActivitySnappingUpService , no config to enable AOP.
+2015-09-07 10:38:00,553 [main] DEBUG org.nutz.ioc.impl.ScopeContext - Save object 'activitySnappingUpService' to [app] 
+2015-09-07 10:38:00,568 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'orderService'<null>
+2015-09-07 10:38:00,568 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:38:00,568 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Make...'orderService'<null>
+2015-09-07 10:38:00,568 [main] DEBUG org.nutz.ioc.aop.impl.DefaultMirrorFactory - class m.w.frs.mgserver.service.snapup.OrderService , no config to enable AOP.
+2015-09-07 10:38:00,568 [main] DEBUG org.nutz.ioc.impl.ScopeContext - Save object 'orderService' to [app] 
+2015-09-07 10:38:00,568 [main] DEBUG org.nutz.ioc.impl.NutIoc - Get 'dao'<null>
+2015-09-07 10:38:00,568 [main] DEBUG org.nutz.ioc.impl.NutIoc - 	 >> Load definition
+2015-09-07 10:38:00,568 [main] DEBUG org.nutz.ioc.impl.ScopeContext - Remove object 'orderService' from [app] 
+2015-09-07 10:38:00,568 [main] DEBUG org.nutz.ioc.impl.ScopeContext - Remove object 'activitySnappingUpService' from [app] 
+2015-09-17 09:50:44,192 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-09-17 09:51:39,406 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues
+2015-09-17 09:51:47,399 [main] INFO  org.nutz.log.Logs - Nutz is licensed under the Apache License, Version 2.0 .
+Report bugs : https://github.com/nutzam/nutz/issues

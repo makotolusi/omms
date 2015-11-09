@@ -1,0 +1,13 @@
+<div class="thumbnail"  style="min-height:200px;width:200px;">
+	<img src="{{imgUrl}}" style="min-height:200px;width:200px;padding:2px;" ng-show="imgUrl">
+	<div ng-hide="imgUrl  || isUploadingFile" class="text-center">
+		<br><br><br><br>
+		<input type="file" name="uploadFile"  ng-file-select="uploadFile($files)" >
+	</div>
+	<span class="error" ng-show="errorInfo">&nbsp;&nbsp; {{errorInfo}}</span>
+	<div ng-show="isUploadingFile" class="text-center">
+		<br><br><br><br>
+		<img src="./content/directive/loading.gif">
+	</div>
+	<button type="button" class="btn btn-danger" ng-click="deleteFile()" ng-show="imgUrl" ><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+</div>

@@ -1,0 +1,80 @@
+/**
+ * This example shows examples of the various supported form field types.
+ */
+var formId='agent'
+Ext.define('agent.AgentForm', {
+    extend: 'Ext.form.Panel',
+    xtype: 'form-'+formId,
+    //<example>
+    requires: [
+        'Ext.form.field.*,Ext.slider.Single,Ext.layout.container.VBox'
+    ],
+    id:formId+'-form',
+    //</example>
+
+    frame: false,
+    width: 300,
+    bodyPadding: 10,
+    layout:'form',
+	
+	initComponent : function() {
+		var me = this;
+		Ext.apply(this, {
+			items: [{
+		        xtype: 'textfield',
+		        name: 'agentId',
+		    	allowBlank : false,
+		    	hidden:true,
+		        value : me.agentId
+		    },{
+		        name: 'profitRatio',
+		        minValue: -100,
+		        maxValue: 100,
+		        fieldLabel: '利润率',
+		        xtype:'numberfield',
+		        allowDecimals: true,
+		        decimalPrecision: 2,
+		        value : me.profitRatio,
+		        step: 0.01
+		    }
+		   ]
+		});
+		this.callParent();
+	},
+	buttons : [{
+		text : '提交',
+		id : 'sendbtn',
+		handler : function() {
+			var me = this;
+			var form = Ext.getCmp(formId+'-form');
+			var formValue = form.getValues();
+			console.log(formValue);
+			if (form.isValid()) {
+				
+				Ext.Ajax.request({
+					url : ROOT_URL + '../agent/save',
+					method : 'POST',
+					params : formValue,
+					success : function(response) {
+						var text = response.responseText;
+						Ext.MessageBox.alert('提示', '创建成功', function() {
+							var p = Ext.getCmp(form.gridId);
+								p.getStore().reload();
+								Ext.getCmp(form.winId).close();
+						}, this);
+
+					},
+					failure : function(response) {
+						var text = response.responseText;
+						Ext.MessageBox.alert('提示', '创建失败:' + text, function() {
+							var p = Ext.getCmp(form.gridId);
+							p.getStore().reload();
+							Ext.getCmp(form.winId).close();
+						}, this);
+					}
+				});
+			}
+		}
+	}]
+    
+});

@@ -1,0 +1,223 @@
+.icon-find{
+	background:url('icons/find.png') no-repeat;
+}
+.icon-check{
+	background:url('icons/check.png') no-repeat;
+}
+.icon-open{
+	background:url('icons/open.png') no-repeat;
+}
+.icon-upload{
+	background:url('icons/upload.png') no-repeat;
+}
+.icon-bin{
+	background:url('icons/bin.png') no-repeat;
+}
+.icon-stop{
+	background:url('icons/stop.png') no-repeat;
+}
+.icon-saves{
+	background:url('icons/filesaveas.png') no-repeat;
+}
+.icon-save1{
+	background:url('icons/save1.png') no-repeat;
+}
+.icon-save2{
+	background:url('icons/save2.png') no-repeat;
+}
+.icon-save3{
+	background:url('icons/save3.png') no-repeat;
+}
+.icon-dgadd{
+	background:url('icons/dgadd.png') no-repeat;
+}
+.icon-dgdelete{
+	background:url('icons/dgdelete.png') no-repeat;
+}
+.icon-dgedit{
+	background:url('icons/dgedit.png') no-repeat;
+}
+.icon-dglook{
+	background:url('icons/dglook.png') no-repeat;
+}
+.icon-excel{
+	background:url('icons/excel.png') no-repeat;
+}
+.icon-exit{
+	background:url('icons/exit.png') no-repeat;
+}
+.icon-password{
+	background:url('icons/password.png') no-repeat;
+}
+.icon-admin{
+	background:url('icons/admin.png') no-repeat;
+}
+.icon-user{
+	background:url('icons/user.png') no-repeat;
+}
+.icon-group{
+	background:url('icons/group.png') no-repeat;
+}
+.icon-role{
+	background:url('icons/role.png') no-repeat;
+}
+.icon-resync{
+	background:url('icons/resync.png') no-repeat;
+}
+.icon-wrench{
+	background:url('icons/wrench.png') no-repeat;
+}
+.icon-homepage{
+	background:url('icons/homepage.png') no-repeat;
+}
+.icon-workflow{
+	background:url('icons/workflow.png') no-repeat;
+}
+.icon-setting{
+	background:url('icons/setting.png') no-repeat;
+}
+.icon-planmain{
+	background:url('icons/planmain.png') no-repeat;
+}
+.icon-planmajor{
+	background:url('icons/planmajor.png') no-repeat;
+}
+.icon-planmonth{
+	background:url('icons/planmonth.png') no-repeat;
+}
+.icon-planweek{
+	background:url('icons/planweek.png') no-repeat;
+}
+.icon-gantt{
+	background:url('icons/gantt.png') no-repeat;
+}
+.icon-unbalance{
+	background:url('icons/unbalance.png') no-repeat;
+}
+.icon-stamp{
+	background:url('icons/stamp.png') no-repeat;
+}
+.icon-bell{
+	background:url('icons/bell.png') no-repeat;
+}
+.icon-jew{
+	background:url('icons/jew.png') no-repeat;
+}
+.icon-project{
+	background:url('icons/project.png') no-repeat;
+}
+.icon-project01{
+	background:url('icons/project01.png') no-repeat;
+}
+.icon-project02{
+	background:url('icons/project02.png') no-repeat;
+}
+.icon-project03{
+	background:url('icons/project03.png') no-repeat;
+}
+.icon-project04{
+	background:url('icons/project04.png') no-repeat;
+}
+.icon-project05{
+	background:url('icons/project05.png') no-repeat;
+}
+.icon-project06{
+	background:url('icons/project06.png') no-repeat;
+}
+.icon-project07{
+	background:url('icons/project07.png') no-repeat;
+}
+.icon-copy{
+	background:url('icons/copy.png') no-repeat;
+}
+.icon-define{
+	background:url('icons/define.png') no-repeat;
+}
+.icon-play{
+	background:url('icons/play.png') no-repeat;
+}
+.icon-pause{
+	background:url('icons/pause.png') no-repeat;
+}
+.icon-addNode{
+	background:url('icons/addNode.png') no-repeat;
+}
+.icon-appendStep{
+	background:url('icons/appendStep.png') no-repeat;
+}
+.icon-appendSubflow{
+	background:url('icons/appendSubflow.png') no-repeat;
+}
+.icon-important1{
+	padding-left : 20px;
+	background:url('icons/important.png') no-repeat;
+}
+.icon-focusmark1{
+	padding-left : 20px;
+	background:url('icons/focusmark.png') no-repeat;
+}
+
+.icon-home{
+	padding-left : 20px;
+	background:url('icons/menu/home.png') no-repeat;
+}
+.icon-nav{
+	padding-left : 20px;
+	background:url('icons/menu/nav.png') no-repeat;
+}
+.icon-faq{
+	padding-left : 20px;
+	background:url('icons/menu/faq.png') no-repeat;
+}
+.icon-rep{
+	padding-left : 20px;
+	background:url('icons/menu/rep.png') no-repeat;
+}
+.icon-fwd{
+	padding-left : 20px;
+	background:url('icons/menu/fwd.png') no-repeat;
+}
+.icon-log{
+	padding-left : 20px;
+	background:url('icons/menu/log.png') no-repeat;
+}
+.icon-new{
+	padding-left : 20px;
+	background:url('icons/menu/new.png') no-repeat;
+}
+.icon-olq{
+	padding-left : 20px;
+	background:url('icons/menu/olq.png') no-repeat;
+}
+.icon-ifs{
+	padding-left : 20px;
+	background:url('icons/menu/ifs.png') no-repeat;
+}
+.icon-sys{
+	padding-left : 20px;
+	background:url('icons/menu/sys.png') no-repeat;
+}
+.icon-desk{
+	padding-left : 20px;
+	background:url('icons/menu/desk.png') no-repeat;
+}
+.icon-reply{
+	padding-left : 20px;
+	background:url('icons/reply.png') no-repeat;
+}
+.icon-forward{
+	padding-left : 20px;
+	background:url('icons/forward.png') no-repeat;
+}
+.icon-readd{
+	padding-left : 20px;
+	background:url('icons/readd.png') no-repeat;
+}
+.icon-refer{
+	padding-left : 20px;
+	background:url('icons/refer.png') no-repeat;
+}
+.icon-searchpp{
+	padding-left : 20px;
+	background:url('icons/searchpp.png') no-repeat;
+}

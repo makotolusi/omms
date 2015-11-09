@@ -1,0 +1,29 @@
+package m.w.frs.mgserver.module;
+
+import m.w.core.dto.DataGrid;
+import m.w.sys.service.CommerceUserService;
+
+import org.apache.commons.lang3.StringUtils;
+import org.nutz.dao.Cnd;
+import org.nutz.ioc.loader.annotation.Inject;
+import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.mvc.annotation.At;
+
+@At("/commerceuser")
+@IocBean
+public class CommerceUserModule {
+
+	@Inject
+	private CommerceUserService commerceUserService;
+
+	/**
+	 * list order info
+	 * */
+	@At({ "/items" })
+	public DataGrid items(String phoneNum) {
+		if (StringUtils.isEmpty(phoneNum))
+			return commerceUserService.datagrid();
+		else
+			return commerceUserService.datagrid(Cnd.where("phoneNum","=",phoneNum));
+	}
+}

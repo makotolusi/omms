@@ -1,0 +1,12 @@
+eclipse.preferences.version=1
+encoding//WebContent/cms=UTF-8
+encoding//WebContent/cms/content/controllers/main.js=UTF-8
+encoding//WebContent/cms/content/modules/app.js=UTF-8
+encoding//WebContent/cms/content/modules/resource.js=UTF-8
+encoding//WebContent/cms/content/views/articleEdit.html=UTF-8
+encoding//WebContent/cms/content/views/articleSearch.html=UTF-8
+encoding//WebContent/cms/content/views/articleView.html=UTF-8
+encoding//WebContent/cms/content/views/myArticles.html=UTF-8
+encoding//WebContent/cms/index.jsp=UTF-8
+encoding//conf/app.properties=UTF-8
+encoding/<project>=UTF-8

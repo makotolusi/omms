@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="ehcache.xsd"
+         updateCheck="false" monitoring="off"
+         dynamicConfig="true">
+    <!-- Sets the path to the directory where cache .data files are created.
+
+             If the path is a Java System Property it is replaced by
+             its value in the running VM.
+
+             The following properties are translated:
+             user.home - User's home directory
+             user.dir - User's current working directory
+             java.io.tmpdir - Default temp file path
+-->
+    <diskStore path="java.io.tmpdir/nrms-ehcache"/>
+
+
+    <!--Default Cache configuration. These will applied to caches programmatically created through
+            the CacheManager.
+
+            The following attributes are required:
+
+            maxElementsInMemory            - Sets the maximum number of objects that will be created in memory
+            eternal                        - Sets whether elements are eternal. If eternal,  timeouts are ignored and the
+                                             element is never expired.
+            overflowToDisk                 - Sets whether elements can overflow to disk when the in-memory cache
+                                             has reached the maxInMemory limit.
+
+            The following attributes are optional:
+            timeToIdleSeconds              - Sets the time to idle for an element before it expires.
+                                             i.e. The maximum amount of time between accesses before an element expires
+                                             Is only used if the element is not eternal.
+                                             Optional attribute. A value of 0 means that an Element can idle for infinity.
+                                             The default value is 0.
+            timeToLiveSeconds              - Sets the time to live for an element before it expires.
+                                             i.e. The maximum time between creation time and when an element expires.
+                                             Is only used if the element is not eternal.
+                                             Optional attribute. A value of 0 means that and Element can live for infinity.
+                                             The default value is 0.
+            diskPersistent                 - Whether the disk store persists between restarts of the Virtual Machine.
+                                             The default value is false.
+            diskExpiryThreadIntervalSeconds- The number of seconds between runs of the disk expiry thread. The default value
+                                             is 120 seconds.
+            -->
+
+    <defaultCache
+            maxElementsInMemory="10000"
+            eternal="false"
+            overflowToDisk="true"
+            timeToIdleSeconds="0"
+            timeToLiveSeconds="0"
+            diskPersistent="true"
+            diskExpiryThreadIntervalSeconds="120"/>
+
+
+    <cache name="m.w.cache.ztjs.ProjectDetail"
+        maxElementsInMemory="5000"
+        eternal="false"
+        timeToIdleSeconds="28800"
+        timeToLiveSeconds="28800"
+        overflowToDisk   ="false" >
+        <searchable>
+        	<searchAttribute name="companyCode" expression="value.projdept"/>
+        	<searchAttribute name="state"       expression="value.state"/>
+        	<searchAttribute name="code"        expression="value.code"/>
+        	<searchAttribute name="name"        expression="value.name"/>
+        </searchable>
+    </cache>
+
+    <cache name="m.w.cache.ztjs.Company"
+        maxElementsInMemory="1500"
+        eternal="false"
+        timeToIdleSeconds="28800"
+        timeToLiveSeconds="28800"
+        overflowToDisk="false">
+        <searchable>
+        	<searchAttribute name="code"      expression="value.code"/>
+        	<searchAttribute name="id"        expression="value.id"/>
+        	<searchAttribute name="type"      expression="value.type"/>
+        	<searchAttribute name="pcode"     expression="value.pcode"/>
+        	<searchAttribute name="pid"       expression="value.pid"/>
+        	<searchAttribute name="ptype"     expression="value.ptype"/>
+        	<searchAttribute name="dwxz"      expression="value.dwxz"/>
+        	<searchAttribute name="order"     expression="value.order"/>
+        	<searchAttribute name="hasParent" expression="value.hasParent"/>
+        </searchable>
+    </cache>
+
+	<!-- shiro-ehcache -->
+    <cache name="shiro-activeSessionCache"
+           maxElementsInMemory="10000"
+           overflowToDisk="true"
+           eternal="true"
+           timeToLiveSeconds="0"
+           timeToIdleSeconds="0"
+           diskPersistent="true"
+           diskExpiryThreadIntervalSeconds="600"/>
+
+    <cache name="org.apache.shiro.realm.text.PropertiesRealm-0-accounts"
+           maxElementsInMemory="1000"
+           eternal="true"
+           overflowToDisk="true"/>
+</ehcache>

@@ -1,0 +1,83 @@
+package m.w.frs.mgserver.service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import m.w.frs.mgserver.domain.Activity;
+import m.w.frs.mgserver.domain.Product;
+import m.w.frs.mgserver.domain.SnapUp;
+import m.w.sys.util.JedisTemplate;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Transaction;
+
+
+public class SnapUpService   {
+
+	private static final int ORDER_EXPIRE=60;
+	
+	public SnapUp snapup(SnapUp snapUp){
+		Jedis jedis = null;
+		try {
+			jedis = JedisTemplate.getPool2().getResource();// cache
+			jedis.watch(snapUp.getStockKey());
+			Integer stockOrigin=Integer.parseInt(jedis.hget(snapUp.getStockKey(), SnapUp.STOCK));
+			System.out.println("库存  "+stockOrigin+"抢购数量 "+snapUp.getCount());
+			Integer stock=stockOrigin-snapUp.getCount();
+			System.out.println("差值  "+stock);
+			if(stock<0){
+				System.out.println("库存不足  ");
+				return new SnapUp(false,stock,snapUp.getStockKey());
+			}else{
+				Transaction transaction=jedis.multi();
+				transaction.hset(snapUp.getStockKey(),SnapUp.STOCK, stock+"");
+				if(transaction.exec().isEmpty()){
+					System.err.print("更新库存失败 ");
+					return null;
+				}else{
+					System.out.println("该商品抢购成功 库存还剩 "+stock);
+					return new SnapUp(true,stock,snapUp.getStockKey());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}finally{
+			jedis.close();
+		}
+	}
+//	
+//	public SnapUp payList(int activityId,String productCode,String token,int count){
+//		
+//	
+//	}
+	
+	public void saveOrder(SnapUp snapUp){
+//		SnapUp snapUp=new SnapUp(activityId, productCode, token);
+		JedisTemplate.set(snapUp.getOrderKey(), snapUp.getCount()+"",ORDER_EXPIRE);
+	}
+	
+	public void start(List<SnapUp> orders){
+		List<SnapUp> results=new ArrayList<>();
+		for (Iterator iterator = orders.iterator(); iterator.hasNext();) {
+			SnapUp snapUp = (SnapUp) iterator.next();
+			this.saveOrder(snapUp);
+			results.add(this.snapup(snapUp));
+		}
+		System.out.println(results);
+	}
+	
+	public static void main(String[] args) {
+		SnapUpService s=new SnapUpService();
+		SnapUp snapUp=new SnapUp(10, "A0002", "xyz");
+		System.out.println("现有产品 key "+snapUp.getStockKey()+" 库存  "+JedisTemplate.hmget(snapUp.getStockKey(),"stock"));
+		List<SnapUp> orders=new ArrayList<>();
+		SnapUp order=new SnapUp(10, "A0002", "xyz");
+		order.setCount(10);
+		System.out.println("订单 key "+snapUp.getOrderKey()+" 购买数量  "+order.getCount());
+		orders.add(order);
+		s.start(orders);
+//		s.snapup("lusi1", 5);
+	}
+}

@@ -1,0 +1,344 @@
+package m.w.sys.module;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import m.w.App;
+import m.w.BasicModule;
+import m.w.core.dto.DataGrid;
+import m.w.core.dto.KeResult;
+import m.w.core.dto.Result;
+import m.w.core.util.Names;
+import m.w.mg.sso.util.UserUtils;
+import m.w.sys.domain.Atta;
+import m.w.sys.domain.AttaType;
+import m.w.sys.service.FileService;
+import m.w.sys.util.Consts;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.joda.time.DateTime;
+import org.nutz.ioc.loader.annotation.Inject;
+import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.lang.Lang;
+import org.nutz.lang.Streams;
+import org.nutz.lang.Strings;
+import org.nutz.mvc.annotation.AdaptBy;
+import org.nutz.mvc.annotation.At;
+import org.nutz.mvc.annotation.Ok;
+import org.nutz.mvc.annotation.POST;
+import org.nutz.mvc.annotation.Param;
+import org.nutz.mvc.upload.TempFile;
+import org.nutz.mvc.upload.UploadAdaptor;
+import org.nutz.mvc.upload.UploadInfo;
+import org.nutz.mvc.upload.Uploads;
+
+import com.qiniu.common.QiniuException;
+import com.qiniu.http.Response;
+import com.qiniu.storage.UploadManager;
+import com.qiniu.storage.model.DefaultPutRet;
+import com.qiniu.util.Auth;
+
+@At("/sys/file")
+@IocBean
+public class FileModule extends BasicModule {
+	@Inject
+	private FileService fileService;
+
+	
+	@At("/attas/?")
+	public Object attas(String attaIds) {
+		if (!Strings.isBlank(attaIds)) {
+			return fileService.attas(Lang.array2list(
+					Strings.splitIgnoreBlank(attaIds, ","), Long.class));
+		}
+		return DataGrid.EMPTY;
+	}
+
+	/**
+	 * 批量上传文件
+	 * 
+	 * @return
+	 */
+	@At("/xupload/?")
+	@POST
+	@AdaptBy(type = UploadAdaptor.class, args = { "${app.root}/WEB-INF/tmp" })
+	public Result xupload(AttaType type, @Param("..") Atta info,
+			@Param("file") TempFile[] files) {
+		try {
+			return fileService.xupload(type, info, files, null);
+		} catch (Exception e) {
+			return Result.err(e.getMessage());
+		}
+	}
+	private Auth auth = Auth.create(App.getQiNiuAccessKey(), App.getQiNiuSecretKey());
+	/**
+	 * kindeditor上传文件
+	 * 
+	 * @return
+	 */
+	@At("/upload")
+	@POST
+	@AdaptBy(type = UploadAdaptor.class, args = { "${app.root}/WEB-INF/tmp" })
+	public Object upload(@Param("imgFile") TempFile  imgFile,HttpServletRequest req,  ServletContext context) {
+//		return fileService.keupload(type, fileDesc, file, null);
+		HashMap<String, Object> result = new HashMap<String, Object>();
+		UploadManager uploadManager = new UploadManager();
+		Random random = new Random(DateTime.now().getMillis());
+		String key = "test/" + String.valueOf(random.nextLong()).replace("-", "").substring(1,5)+ imgFile.getFile().getName();
+		try {
+			Response res = uploadManager.put(imgFile.getFile(), key, uptoken());
+			DefaultPutRet ret = res.jsonToObject(DefaultPutRet.class);
+			if (!res.isOK()) {
+				throw new QiniuException(res);
+			} else {
+				result.put("key", ret.key);
+				result.put("url", getPicUrl(ret.key));
+				Consts.qiniuEandToken.put("key", ret.key);
+			}
+		} catch (QiniuException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			result.put("failure", e.getMessage());
+		} 
+		result.put("success", true);
+		return result;
+	}
+	@At
+	@Ok("json")
+	public String downloadPath(String key) {
+		String url = getPicUrl(key);
+		if (App.getQiNiuBucketIsPublic()) {
+			return url;
+		} else {
+			return auth.privateDownloadUrl(url);
+		}
+	}
+
+	private String getPicUrl(String key) {
+		return "http://".concat(App.getQiNiuDomain()).concat("/").concat(key);
+	}
+	@At
+	@Ok("json")
+	public String uptoken() {
+		return auth.uploadToken(App.getQiNiuBucket());
+	}
+	
+
+	/**
+	 * 获取当前上传进度信息
+	 * 
+	 * @param req
+	 * @return
+	 */
+	@At
+	public UploadInfo info(HttpServletRequest req) {
+		return Uploads.getInfo(req);
+	}
+
+	/**
+	 * 停止当前上传
+	 * 
+	 * @param req
+	 */
+	@At
+	public Result stop(HttpServletRequest req) {
+		try {
+			Uploads.getInfo(req).stop = true;
+		} catch (Exception e) {
+			return Result.err(e.getMessage());
+		}
+		return Result.ok("上传停止成功！");
+	}
+
+	@At("/downfile")
+	@Ok("raw:stream")
+	public void downfile(String fileName, String filePath,
+			HttpServletResponse rep) {
+		if (!Strings.isBlank(fileName) && !Strings.isBlank(filePath)) {
+			if (filePath.startsWith(FileService.UPLOAD_URL)) {
+				filePath = filePath.substring(FileService.UPLOAD_URL.length());
+			}
+			File file = new File(FilenameUtils.concat(
+					FileService.UPLOAD_ROOT_DIR, filePath));
+			if (file.exists()) {
+				InputStream fileIn = Streams.fileIn(file);
+				long fileSize = FileUtils.sizeOf(file);
+				rep.setContentType("application/x-msdownload");
+				rep.setContentLength((int) fileSize);
+				String outFileName = Names.encodeFileName(fileName);
+				rep.setHeader("Content-Disposition",
+						"attachment; filename=".concat(outFileName));
+				int blockSize = 4096;
+				int totalRead = 0;
+				int readBytes = 0;
+				byte b[] = new byte[blockSize];
+				try {
+					while ((long) totalRead < fileSize) {
+						readBytes = fileIn.read(b, 0, blockSize);
+						totalRead += readBytes;
+						rep.getOutputStream().write(b, 0, readBytes);
+					}
+					fileIn.close();
+				} catch (Exception e) {
+					// 下载写入出错，不做处理
+				}
+			}
+		}
+	}
+
+	@At("/download/?")
+	@Ok("raw:stream")
+	public void download(Long id, HttpServletResponse rep) {
+		Atta a = fileService.fetch(id);
+		File file = new File(FilenameUtils.concat(FileService.UPLOAD_ROOT_DIR,
+				a.getFilePath()));
+		if (a != null && file.exists()) {
+			InputStream fileIn = Streams.fileIn(file);
+			rep.setContentType("application/x-msdownload");
+			rep.setContentLength(a.getFileSize().intValue());
+			String outFileName = Names.encodeFileName(a.getRawName());
+			rep.setHeader("Content-Disposition",
+					"attachment; filename=".concat(outFileName));
+			int blockSize = 4096;
+			int totalRead = 0;
+			int readBytes = 0;
+			byte b[] = new byte[blockSize];
+			try {
+				while ((long) totalRead < a.getFileSize()) {
+					readBytes = fileIn.read(b, 0, blockSize);
+					totalRead += readBytes;
+					rep.getOutputStream().write(b, 0, readBytes);
+				}
+				fileIn.close();
+			} catch (Exception e) {
+				// 下载写入出错，不做处理
+			}
+		}
+	}
+
+	/**
+	 * 批量删除附件
+	 * 
+	 * @param attaIds
+	 * @return
+	 */
+	@At
+	@POST
+	public Result xdelete(String attaIds) {
+		return fileService.xdelete(attaIds, null, null);
+	}
+
+	/**
+	 * kindeditor上传文件
+	 * 
+	 * @return
+	 */
+	@At
+	@POST
+	@AdaptBy(type = UploadAdaptor.class, args = { "${app.root}/WEB-INF/tmp" })
+	public KeResult keupload(@Param("imgFile") TempFile file,
+			@Param("fileDesc") String fileDesc) {
+		AttaType type = AttaType.valueOf(param("dir"));
+		System.out.println(fileDesc);
+		return fileService.keupload(type, null, file, null);
+	}
+
+	/**
+	 * 浏览文件
+	 * 
+	 * @return
+	 */
+	@At
+	public Object kebrowse(HttpServletRequest request) {
+		return fileService.kebrowse(request);
+	}
+
+	/**
+	 * 下载文件
+	 * 
+	 * @return
+	 */
+	public Object download() {
+		//
+		return null;
+	}
+
+	public void writeData(List<?> dtoList, String type) throws Exception {
+
+		if (dtoList == null || dtoList.size() == 0)
+			return;
+		// 先创建一个txt文件
+		String filename = "C://tmp//output_"
+				+ UserUtils.CurrentUser().getUsername() + ".txt";
+		File file = new File(filename);
+		String enter = "\r\n";
+		String kama = ",";
+		if (file.exists()) {
+			file.delete();
+		}
+		file.createNewFile();
+		// 将数据写入文件中
+		BufferedWriter output = new BufferedWriter(new FileWriter(file));
+
+
+		// output.write(String.valueOf(dto.get(0).getApartmentName()) + enter);
+		// output.write(encode(String.valueOf(dto.getEndDate()))+"\r\n");
+		// output.write(encode(String.valueOf(0))+"\r\n");
+		// output.write(encode(dto.getCustomerType())+"\r\n");
+		// output.write(encode(String.valueOf(dto.getThLicenseNum()))+"\r\n");
+		// output.write(encode(String.valueOf(dto.getOutCustomerNum())));
+		output.close();
+	}
+
+	@At("/downfileQuery/?")
+	@Ok("raw:stream")
+	public void downfileQuery(String fileName, HttpServletResponse rep) {
+		fileName += ".txt";
+//		String filePath = "C://tmp//License.txt";
+		String filePath = "C://tmp//output_"
+				+ UserUtils.CurrentUser().getUsername() + ".txt";
+		
+		if (!Strings.isBlank(fileName) && !Strings.isBlank(filePath)) {
+
+			if (filePath.startsWith(FileService.UPLOAD_URL)) {
+				filePath = filePath.substring(FileService.UPLOAD_URL.length());
+			}
+			File file = new File(FilenameUtils.concat(
+					FileService.UPLOAD_ROOT_DIR, filePath));
+			if (file.exists()) {
+				InputStream fileIn = Streams.fileIn(file);
+				long fileSize = FileUtils.sizeOf(file);
+				rep.setContentType("application/x-msdownload");
+				rep.setContentLength((int) fileSize);
+				String outFileName = Names.encodeFileName(fileName);
+				rep.setHeader("Content-Disposition",
+						"attachment; filename=".concat(outFileName));
+				int blockSize = 4096;
+				int totalRead = 0;
+				int readBytes = 0;
+				byte b[] = new byte[blockSize];
+				try {
+					while ((long) totalRead < fileSize) {
+						readBytes = fileIn.read(b, 0, blockSize);
+						totalRead += readBytes;
+						rep.getOutputStream().write(b, 0, readBytes);
+					}
+					fileIn.close();
+				} catch (Exception e) {
+					// 下载写入出错，不做处理
+				}
+			}
+		}
+	}
+
+}

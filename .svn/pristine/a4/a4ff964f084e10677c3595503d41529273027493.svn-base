@@ -1,0 +1,59 @@
+<br>
+<div class="btn-group btn-group-justified" role="group" aria-label="...">
+	<a href="#/myAct" class="btn btn-default"><h4><span class="glyphicon glyphicon-fire" aria-hidden="true"></span> 我的活动</h4></a>
+	<a href="#/search" class="btn btn-default"><h4><span class="glyphicon glyphicon-search" aria-hidden="true"></span> 查找活动</h4></a>
+	<a href="#/edit" class="btn btn-primary"><h4><span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span> 发起活动</h4></a>
+</div>
+<hr />
+<form name="actForm" class="form-horizontal" >
+	<div class="row container">
+		<div class="col-xs-4  col-md-3"  ng-repeat="img in imgs">
+			<upload img-index="img.index" on-success="onSuccess" on-delete="onDelete"></upload>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-xs-2 control-label">描述</labe v vl>
+		<div class="col-xs-10">
+			<textarea rows="3" class="form-control" data-ng-model="atc.description"></textarea>
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-xs-2 control-label">心得</label>
+		<div class="col-xs-10">
+			<textarea rows="3" class="form-control" data-ng-model="atc.experience"></textarea>
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<label class="col-xs-2 control-label">货币</label>
+		<div class="col-xs-2">
+			<select class="form-control col-sm-10" data-ng-model="atc.currency">
+				<option data-ng-repeat="value in currencies">{{value}}</option>
+			</select>
+		</div>
+			<div class="input-group col-xs-2">
+				<input type="number" class="form-control" min="0" placeholder="价格" data-ng-model="atc.prince">
+			</div>
+	</div>
+
+
+	<div class="form-group">
+		<label class="col-xs-2 control-label">发现地址</label>
+		<div class="col-xs-10">
+			<input type="text" class="form-control col-sm-10" data-ng-model="atc.addr">
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-xs-2 control-label">板块</label>
+		<div class="col-xs-10">
+			<select class="form-control col-sm-10" data-ng-model="atc.piece">
+				<option data-ng-repeat="value in pieces">{{value}}</option>
+			</select>
+		</div>
+	</div>
+	
+{{atc}}
+<button class="btn btn-primary btn-block" data-ng-click="onSave()"><span
+	class="glyphicon glyphicon-floppy-save"></span> 保存</button>
+<a href="#/mine" class="btn btn-warning btn-block"><span
+	class="glyphicon glyphicon-remove"></span> 取消</a>

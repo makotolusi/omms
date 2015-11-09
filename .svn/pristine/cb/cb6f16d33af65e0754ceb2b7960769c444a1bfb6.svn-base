@@ -1,0 +1,143 @@
+package m.w.frs.mgserver.service.snapup;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import m.w.frs.mgserver.domain.SnapUpOrder;
+import m.w.frs.mgserver.domain.SnapUpResult;
+import m.w.sys.util.RedisManager;
+
+import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
+
+import redis.clients.jedis.Jedis;
+
+@IocBean()
+public class ActivitySnappingUpService {
+
+	private static final Log log = Logs.getLog(ActivitySnappingUpService.class);
+
+	private static final int ORDER_EXPIRE = 60;
+
+	/**
+	 * 取得用户订单
+	 * 返回订单明细
+	 * @param orders
+	 */
+	public List<SnapUpResult> snapUpOrder(List<SnapUpOrder> orders, String token) {
+		List<SnapUpResult> results = new ArrayList<>();
+		for (Iterator<SnapUpOrder> iterator = orders.iterator(); iterator
+				.hasNext();) {
+			SnapUpOrder order = (SnapUpOrder) iterator.next();
+			//1.活动是否存在
+			if (!existActivity(order)) {
+				results.add(new SnapUpResult(SnapUpResult.CODE.NONE_ACTIVITY,
+						0, order));
+			} else
+			//2.产品是否存在
+			if (!existProduct(order)) {
+				results.add(new SnapUpResult(SnapUpResult.CODE.NONE_PRODUCT, 0,
+						order));
+			} else {
+				order.setToken(token);
+				// 1 记录订单 缓存超时时间为ORDER_EXPIRE
+				this.saveOrder(order);
+				// 2 返回抢购结果
+				SnapUpResult result = this.snapUpOne(order);
+				// 返回给用户购买不成功，库存不足的信息
+				if (result.getCode() != SnapUpResult.CODE.SUCCESS)
+					results.add(result);
+			}
+		}
+		return results;
+	}
+
+	/**
+	 * 单个订单抢购
+	 * 
+	 * @param order
+	 * @return
+	 */
+	private synchronized SnapUpResult snapUpOne(SnapUpOrder order) {
+		Jedis jedis = null;
+		try {
+			jedis = RedisManager.getJedis();// cache
+			log.info("stock key " + order.getStockKey());
+			Integer stockOrigin = Integer.parseInt(jedis.hget(
+					order.getStockKey(), SnapUpResult.STOCK));// 库存
+			log.info(Thread.currentThread().getName() + " 库存  " + stockOrigin
+					+ "抢购数量 " + order.getCount());
+			Integer stock = stockOrigin - order.getCount();
+			log.info(Thread.currentThread().getName() + " 差值  " + stock);
+			if (stock < 0) {
+				log.info(Thread.currentThread().getName() + " key "
+						+ order.getOrderKey() + " 库存不足  ");
+				// jedis.incr(Consts.REDIS_ORDER + "notenough");
+				return new SnapUpResult(SnapUpResult.CODE.STOCK_NOT_ENOUGH,
+						stockOrigin, order);
+			} else {
+				jedis.hset(order.getStockKey(), SnapUpResult.STOCK, stock + "");
+				log.info(Thread.currentThread().getName() + " key "
+						+ order.getOrderKey() + " 该商品抢购成功 库存还剩 " + stock);
+				return new SnapUpResult(SnapUpResult.CODE.SUCCESS, stock, order);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new SnapUpResult(SnapUpResult.CODE.EXCEPTION, 0, order);
+		} finally {
+			RedisManager.returnJedis(jedis);
+		}
+	}
+
+	/**
+	 *	支付回调 成功订单 持久化
+	 * @param orders
+	 * @param token
+	 * @return
+	 */
+	public void payCallBack(List<SnapUpOrder> orders,boolean confirm) {
+		if(confirm){
+			for (Iterator iterator = orders.iterator(); iterator.hasNext();) {
+				SnapUpOrder snapUpOrder = (SnapUpOrder) iterator.next();
+				RedisManager.persist(snapUpOrder.getOrderKey());//取消订单过期时间 订单成功
+			}
+		}
+	}
+	
+	/**
+	 * 记录用户订单
+	 * 
+	 * @param snapUp
+	 */
+	private void saveOrder(SnapUpOrder snapUp) {
+		log.info("order key " + snapUp.getOrderKey());
+		RedisManager.set(snapUp.getOrderKey(), snapUp.getCount() + "",
+				ORDER_EXPIRE);
+	}
+
+	/**
+	 * 订单的活动是否有效
+	 * 
+	 * @param snapUp
+	 */
+	private boolean existActivity(SnapUpOrder snapUp) {
+		log.info("activity key " + snapUp.getActivityKey());
+		if (RedisManager.keys(snapUp.getActivityKey() + "*") == null
+				|| RedisManager.keys(snapUp.getActivityKey() + "*").isEmpty()) {
+			return false;
+		} else
+			return true;
+	}
+
+	/**
+	 * 订单的产品是否有效
+	 * 
+	 * @param snapUp
+	 */
+	private boolean existProduct(SnapUpOrder snapUp) {
+		log.info("activity_product key " + snapUp.getStockKey());
+		return RedisManager.exists(snapUp.getStockKey());
+	}
+}

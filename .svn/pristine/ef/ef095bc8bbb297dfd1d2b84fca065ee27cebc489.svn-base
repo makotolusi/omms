@@ -1,0 +1,136 @@
+package m.w.frs.mgserver.domain;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Map;
+
+import org.nutz.dao.entity.annotation.ColDefine;
+import org.nutz.dao.entity.annotation.ColType;
+import org.nutz.dao.entity.annotation.Column;
+import org.nutz.dao.entity.annotation.Comment;
+import org.nutz.dao.entity.annotation.Id;
+import org.nutz.dao.entity.annotation.Table;
+
+import m.w.core.dao.IdEntity;
+import m.w.frs.mgserver.domain.Order.Status;
+import m.w.sys.domain.Constable;
+import m.w.sys.util.Consts;
+import m.w.sys.util.WrapSupport;
+
+/**
+ * 抢购订单
+ * 
+ * @author lusi
+ *
+ */
+
+@Table("tbl_orderdetail")
+@Comment("订单明细")
+public class OrderDetail extends WrapSupport implements Serializable, IdEntity, Constable {
+
+	@Id
+	@Column
+	private Long id;
+
+	@Column
+	private Long orderId;
+
+	@Column("activityId")
+	private Integer activityId;
+
+	@Column("count")
+	private Integer count;
+
+	@Column("productCode")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1000)
+	private String productCode;
+
+	/** 状态 */
+	@Column("status")
+	protected Status status = Status.WAITING_CONFIRM;
+
+	@Column
+	private BigDecimal price;// 价格
+
+	private String orderCode;
+
+	public Integer getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(Integer activityId) {
+		this.activityId = activityId;
+	}
+
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+	public Long getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(Long orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getOrderCode() {
+		return orderCode;
+	}
+
+	public void setOrderCode(String orderCode) {
+		this.orderCode = orderCode;
+	}
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+
+	public String getOrderDetailKey() {
+		return Consts.REDIS_ORDER + orderCode + Consts.REDIS_SPLIT + this.getActivityId() + Consts.REDIS_SPLIT
+				+ this.getProductCode() + Consts.REDIS_SPLIT + getCount();
+	}
+
+	public String getStockKey() {
+		return Consts.REDIS_STOCK + this.getActivityId() + Consts.REDIS_SPLIT + this.getProductCode();
+	}
+
+	public String getActivityKey() {
+		return Consts.REDIS_STOCK + this.getActivityId();
+	}
+
+	@Override
+	public String toString() {
+		return "OrderDetail [id=" + id + ", orderId=" + orderId + ", activityId=" + activityId + ", count=" + count
+				+ ", productCode=" + productCode + ", price=" + price + "]";
+	}
+
+	@Override
+	public Map<String, String> getConstFieldMap() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Long getId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

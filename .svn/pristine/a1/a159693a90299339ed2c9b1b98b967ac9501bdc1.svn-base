@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Actions Example</title>
+    <link rel="stylesheet" type="text/css" href="../../shared/example.css" />
+        <link rel="stylesheet" type="text/css" href="../../shared/htmleditor/ux-all.css" />
+    <!-- GC -->
+     
+      <script type="text/javascript" src="../Global.js"></script>
+<script type="text/javascript" src="../../shared/include-ext.js"></script>
+    <script type="text/javascript" src="../../shared/options-toolbar.js"></script>
+    <script type="text/javascript" src="../../shared/examples.js"></script>
+ <script type="text/javascript" src="../../shared/htmleditor/Ext.ux.form.plugin.HtmlEditor.js"></script>
+
+    
+    <!-- page specific -->
+    <style type="text/css">
+        /* style rows on mouseover */
+        .x-grid-row-over .x-grid-cell-inner {
+            font-weight: bold;
+        }
+
+        /* Style the buyAction Components; Button and MenuItem */
+        .buy-button {
+            background-image: url(../../shared/icons/fam/accept.png) !important;
+			background-repeat: no-repeat !important;
+        }
+    </style>
+    <script type="text/javascript" src="../agent/AgentForm.js"></script>
+    <script type="text/javascript" src="UserGrid.js"></script>
+    <script type="text/javascript">
+    
+    Ext.onReady(function() {
+    	Ext.QuickTips.init();
+    	// create the Grid
+    	var grid = Ext.create('user.UserGrid', {
+    		renderTo : 'grid-example',
+    		title : '商业用户管理'
+    	});
+    	var sellAction = Ext.create('Ext.Action', {
+    		iconCls : 'icon-add', // Use a URL in the icon config
+    		text : '新增经销商',
+    		disabled : true,
+    		handler : function(widget, event) {
+    			var rec = grid.getSelectionModel().getSelection()[0];
+    			if (rec) {
+    				//create window
+    				var win = Ext.create('Ext.window.Window', {
+    					title : '新增经销商',
+    					height : 130,
+    					width : 300,
+    					layout : 'fit',
+    					id:'agent-profitratio-win',
+    					modal : true,
+    					items : {
+    						xtype : 'form-agent',
+    						profitRatio:rec.get('profitRatio'),
+    						agentId : rec.get('id'),
+    						winId:'agent-profitratio-win',
+    						gridId:'userGrid'
+    					}
+    				}).show();
+    			}
+    		}
+    	});
+    	Ext.getCmp('grid-toolbar').add(sellAction);
+    	grid.getSelectionModel().on({
+    		selectionchange : function(sm, selections) {
+    			if (selections.length) {
+    				sellAction.enable();
+    			} else {
+    				sellAction.disable();
+    			}
+    		}
+    	});
+    });
+
+    </script>
+</head>
+<body>
+
+    <div id="grid-example" style="overflow:auto; "></div>
+</body>
+</html>

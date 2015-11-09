@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<groups xmlns="http://www.isdc.ro/wro">
+
+  <group name="wx">
+    <js>/js/core.js</js>
+
+    <js minimize="true">/js/json/json2-min.js</js>
+    <js>/js/json/form2js.js</js>
+    <js>/js/json/js2form.js</js>
+
+    <js minimize="true">/js/jquery/jquery.min.js</js>
+    <js>/js/json/jquery.toObject.js</js>
+    <js>/js/jquery/jquery.extends.js</js>
+
+    <js minimize="true">/js/easyui/jquery.easyui.min.js</js>
+    <js>/js/easyui/locale/easyui-lang-zh_CN.js</js>
+    <js>/js/easyui/extension/datagridview/datagrid-scrollview.js</js>
+    <js>/js/easyui/extension/edatagrid/jquery.edatagrid.js</js>
+    <js>/js/easyui/jquery.easyui.extends.js</js>
+
+    <js minimize="true">/js/kindeditor/kindeditor-all-min.js</js>
+    <js>/js/kindeditor/kindeditor.basePath.js</js>
+
+	<js>/js/lightbox/js/jquery.lightbox-0.5.js</js>
+
+    <js>/js/commons.js</js>
+    <js>/js/jquery.wxparser.js</js>
+    <js>/js/jquery.wxgrid.js</js>
+	<js>/js/app.sys.js</js>
+
+    <css>/js/easyui/themes/default/easyui.css</css>
+    <css>/js/easyui/themes/icon.css</css>
+    <css>/js/kindeditor/themes/default/default.css</css>
+    <css>/css/main.css</css>
+    <css>/css/icon.css</css>
+  </group>
+
+</groups>

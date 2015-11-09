@@ -1,0 +1,60 @@
+package m.w.frs.mgserver.module.rest;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import m.w.core.dto.Result;
+import m.w.frs.mgserver.domain.SnapUpOrder;
+import m.w.frs.mgserver.domain.SnapUpResult;
+import m.w.frs.mgserver.service.snapup.ActivitySnappingUpService;
+import m.w.frs.mgserver.service.snapup.SnapupOrderExpireSubscribe;
+import m.w.sys.util.RedisManager;
+
+import org.nutz.ioc.loader.annotation.Inject;
+import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
+import org.nutz.mvc.adaptor.JsonAdaptor;
+import org.nutz.mvc.annotation.AdaptBy;
+import org.nutz.mvc.annotation.At;
+import org.nutz.mvc.annotation.POST;
+
+@At("/ApCommonServices")
+@IocBean
+public class SnapUpAppServices {
+
+	@Inject
+	private ActivitySnappingUpService activitySnappingUpService;
+
+	private static final Log log = Logs.getLog(SnapUpAppServices.class);
+
+	/** 抢购 */
+	@At({ "/snapup" })
+	@POST
+	@AdaptBy(type = JsonAdaptor.class)
+	// @Filters({ @By(type = AuthFilter.class) })
+	public Result add(Map<String,SnapUpOrder[]> orders, HttpServletRequest request) {
+		String token = "xxxxxx";
+		if (request.getAttribute("token") != null) {
+			token = request.getAttribute("token").toString();
+		}
+		List<SnapUpResult> result = activitySnappingUpService.snapUpOrder(
+				Arrays.asList(orders.get("content")), token);
+		Result r=new Result();
+	
+		if (result.isEmpty()){
+			r.setSuccess(true);
+			return r;
+		}
+		else{
+			r.setData(result);
+			return r;
+		}
+			
+	}
+
+}
+

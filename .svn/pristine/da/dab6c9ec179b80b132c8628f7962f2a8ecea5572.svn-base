@@ -1,0 +1,273 @@
+
+Ext.define('activity.ActivityProductGrid', {
+	extend : 'Ext.grid.Panel',
+	xtype : 'grid-activity-product',
+	 id:"activityProductGrid",  
+	// <example>
+	requires : [ 'Ext.grid.*', 'Ext.data.*', 'Ext.util.*', 'Ext.Action',
+	   'Ext.state.*',
+   		 'Ext.form.*','Ext.toolbar.*', 'activity.ActivityForm','activity.ActivityProductStore'],
+
+	
+
+
+	columnLines : true,
+	multiSelect : true,
+	
+	initComponent : function() {
+		var me = this;
+		var delAction = Ext.create('Ext.Action', {
+			icon : '../shared/icons/fam/delete.gif', // Use a URL in the icon config
+			text : '删除',
+			disabled : true,
+			handler : function(widget, event) {
+				Ext.MessageBox.confirm('Confirm', '确认删除吗?', function(btn, text) {
+					if (btn == 'yes') {
+						var rec = me.getSelectionModel().getSelection()[0];
+						if (rec) {
+							Ext.Ajax.request({
+								url : ROOT_URL + '/activityext/activityproductdelete/'+rec.get('id'),
+								method : 'DELETE',
+								success : function(response) {
+									var text = response.responseText;
+									Ext.MessageBox.alert('提示', '创建成功', function() {
+											var p = Ext.getCmp('activityProductGrid');
+											p.getStore().reload();
+
+									}, this);
+
+								},
+								failure : function(response) {
+									var text = response.responseText;
+									Ext.MessageBox.alert('提示', '创建失败:' + text, function() {
+										var p = Ext.getCmp('activityProductGrid');
+										p.getStore().reload();
+									}, this);
+								}
+							});
+						}
+					}
+				});
+			
+			}
+		});
+		me.disable = {
+				iconCls : 'action_stop',
+			id : 'user-disable',
+			// tooltip : '停用',
+			getClass : function(v, meta, record) {
+				console.log(record);
+				if (record.get('status') == 'ON') {
+					this.items[2].tooltip = '停用';
+					return 'action_stop';
+				} else {
+					return 'action_go';
+				}
+			},
+			handler : function(grid, rowIndex, colIndex) {
+				var rec = grid.getStore().getAt(rowIndex);
+			console.log(rec);
+			}
+		};
+		
+		Ext.apply(this, {
+			columns : [ {
+		text : '产品代码',
+		width : 100,
+		sortable : false,
+		dataIndex : 'productCode'
+	}, {
+		text : '产品名称',
+		width : 100,
+		sortable : false,
+		dataIndex : 'productName'
+	}, {
+		text : '价格',
+		sortable : false,
+            width: 130,
+            editor: {
+                xtype: 'numberfield',
+                allowBlank: false
+            },
+            renderer: Ext.util.Format.numberRenderer('0.00'),
+		dataIndex : 'rushPrice'
+	},  {
+		text : '优惠',
+		width : 70,
+		sortable : false,
+		  format: '$0,0',
+		       editor: {
+                xtype: 'numberfield',
+          
+                allowBlank: false
+            },
+            renderer: Ext.util.Format.numberRenderer('0.00'),
+		dataIndex : 'bargainPrice'
+	},{
+		text : '抢购数量',
+		width : 100,
+		sortable : false,
+		     editor: {
+                xtype: 'numberfield',
+                allowBlank: false
+            },
+		dataIndex : 'rushQuantity'
+	}, {
+		text : '排序',
+		width : 100,
+		sortable : false,
+		     editor: {
+                xtype: 'numberfield',
+                allowBlank: false
+            },
+		dataIndex : 'sortNum'
+	},
+	{
+		text : '22',
+		width : 100,
+		hidden:true,
+		sortable : false,
+		dataIndex : 'status'
+	},{
+			text : "操作",
+			xtype : 'actioncolumn',
+			width : 120,
+			items : [ {
+				iconCls: 'icon-ok',  // Use a URL in the icon config
+                tooltip: '启停',
+                getClass : function(v, meta, record) {
+    				console.log(record.get('status'));
+    				if (record.get('status') == '0'||record.get('status') == undefined) {
+    					return 'icon-cancel';
+    				} else {
+    					return 'icon-ok';
+    				}
+    			},
+                handler: function(grid, rowIndex, colIndex) {
+                	var rec = grid.getStore().getAt(rowIndex);
+    				var str = '';
+    				var status=0;
+    				console.log(rec.get('status'));
+    				if (rec.get('status') == '1') {
+    					str = "确认停用吗?";
+    					status=0;
+    				} else {
+    					str = "确认启用吗?";
+    					status=1;
+    				}
+    				
+    				Ext.MessageBox.confirm('确认', str, function(btn, text) {
+    					  var obj={};
+    					   obj.id=rec.get('id');
+    					   obj.status=status
+    					   console.log(obj);
+    					if (btn == 'yes') {
+    						Ext.Ajax.request({
+    							url : ROOT_URL + '/activityext/updactivityproductstatus/6',
+    							method : 'POST',
+    							params :   obj,
+    							success : function(response) {
+    								var text = response.responseText;
+    								Ext.MessageBox.alert('提示', '操作成功', function() {
+    									grid.getStore().reload();
+    								}, this);
+
+    							},
+    							failure : function(response) {
+    								var text = response.responseText;
+    								Ext.MessageBox.alert('提示', '失败-' + text, function() {
+    								}, this);
+    							}
+    						});
+    					}
+    				}, this);
+                }
+            }]
+		}] ,
+	dockedItems : [ {
+		xtype : 'toolbar',
+
+		items : [ {
+			xtype : 'textfield',
+			name : 'name',
+			fieldLabel : '关键词'
+		}, {
+			iconCls : 'icon-add',
+			text : '搜索',
+			scope : this,
+			handler : this.onAddClick
+		}, '->',delAction
+		]
+	}, {
+		xtype : 'pagingtoolbar',
+		dock : 'bottom',
+		store:me.store,
+		displayInfo : true
+	} ],
+	viewConfig : {
+		stripeRows : true,
+		listeners : {
+			itemcontextmenu : function(view, rec, node, index, e) {
+				e.stopEvent();
+				contextMenu.showAt(e.getXY());
+				return false;
+			}
+		}
+	},
+   plugins: Ext.create('Ext.grid.plugin.RowEditing', {
+        clicksToMoveEditor: 1,
+        autoCancel: false
+    }),
+	stateful : false
+		});
+		
+		me.on('edit', function(editor, e) {
+		   console.log(  e.record.data['rushPrice']);
+		   var obj={};
+		   obj.id=e.record.data['id'];
+		   obj.rushQuantity=e.record.data['rushQuantity'];
+		   obj.rushPrice=e.record.data['rushPrice'];
+		   obj.bargainPrice=e.record.data['bargainPrice'];
+		   obj.sortNum=e.record.data['sortNum'];
+		   obj.status=e.record.data['status'];
+		   Ext.Ajax.request({
+				url : ROOT_URL + '/activityext/updactivityproduct/6',
+				method : 'POST',
+				params :   obj,
+				success : function(response) {
+					var text = response.responseText;
+					console.log(text);
+					Ext.MessageBox.alert('提示', '创建成功', function() {
+						win.close();
+					}, this);
+
+				},
+				failure : function(response) {
+					var text = response.responseText;
+					console.log(text);
+					Ext.MessageBox.alert('提示', '创建失败-' + text, function() {
+						win.close();
+					}, this);
+				}
+			});
+//		    e.record.commit();
+		});
+		
+		
+		
+		this.callParent();
+		me.getSelectionModel().on({
+			selectionchange : function(sm, selections) {
+				if (selections.length) {
+					delAction.enable();
+				} else {
+					delAction.disable();
+				}
+			}
+		});
+	},
+	
+	
+});
+
+

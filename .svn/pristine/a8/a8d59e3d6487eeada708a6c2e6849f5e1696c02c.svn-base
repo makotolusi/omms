@@ -1,0 +1,48 @@
+package m.w;
+
+import m.w.core.castor.String2BigDecimal;
+import m.w.core.util.Daos;
+import m.w.sys.quartz.util.Schedulers;
+
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.converters.DateConverter;
+import org.nutz.castor.Castors;
+import org.nutz.dao.Dao;
+import org.nutz.dao.impl.FileSqlManager;
+import org.nutz.dao.impl.NutDao;
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
+import org.nutz.mvc.NutConfig;
+import org.nutz.mvc.Setup;
+
+public class AppSetup implements Setup {
+    private static Log log = Logs.get();
+
+    @Override
+    public void init(NutConfig config) {
+        log.info("开始初始化AppSetup...");
+        App.init(config);
+
+        Castors.me().addCastor(String2BigDecimal.class);
+
+        ConvertUtils.register(new DateConverter(null), java.util.Date.class);
+
+        if(App.isEnableScheduler()){
+            App.scheduler = Schedulers.init();
+        }
+        
+        Dao dao = Daos.dao();
+        ((NutDao)dao).setSqlManager(new FileSqlManager("sqls/"));
+        log.debug("Dao加载了" + dao.sqls().count() + "条SQL语句");
+        
+        log.info("AppSetup初始化完毕！");
+    }
+
+    @Override
+    public void destroy(NutConfig config) {
+        log.info("开始销毁AppSetup...");
+        Schedulers.destroy(App.scheduler);
+        log.info("AppSetup销毁完毕！");
+    }
+
+}

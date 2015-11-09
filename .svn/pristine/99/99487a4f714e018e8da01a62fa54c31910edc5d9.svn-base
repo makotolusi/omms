@@ -1,0 +1,75 @@
+package m.w.frs.mgserver.service;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import m.w.core.service.WxIdService;
+import m.w.frs.mgserver.domain.Activity;
+import m.w.frs.mgserver.domain.ActivityProductData;
+import m.w.frs.mgserver.domain.Product;
+import m.w.frs.mgserver.domain.SnapUpResult;
+import m.w.sys.quartz.domain.PicConfig;
+import m.w.sys.service.PicHandlerService;
+import m.w.sys.util.Consts;
+import m.w.sys.util.RedisManager;
+
+import org.nutz.dao.Cnd;
+import org.nutz.ioc.loader.annotation.Inject;
+import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
+
+@IocBean(fields = "dao")
+public class ActivityProductDataService extends
+		WxIdService<ActivityProductData> {
+	
+	private static final Log log = Logs.getLog(ActivityProductDataService.class);
+	
+	@Inject
+	private PicHandlerService picHandlerService;
+
+	public Object getActivityProcut(String activityId, String res) {
+
+		List<ActivityProductData> as = this.query(
+				Cnd.where("activityId", "=", activityId).desc("entertime"),
+				null);
+
+		for (ActivityProductData a : as) {
+			String url = picHandlerService.getQiniuPrivateUrl(a.getPicUrl1(),picHandlerService.getPicConfig(res, "rule2"));
+			a.setPicUrl1(url);
+			PicConfig config=new PicConfig("500*500");
+			picHandlerService.getQiniuPrivateUrl(a.getPicUrl1(),config);
+		}
+
+		return as;
+	}
+	/**
+	 * 活动添加商品时 需要更新启用的商品到内存
+	 * @param activity
+	 * @param product
+	 */
+	public void addActivityProductToCache(Activity activity, Product product) {
+		String key = Consts.REDIS_STOCK + activity.getId() + ":" + product.getProductCode();
+		Map<String, String> map = new HashMap<>();
+		map.put(SnapUpResult.STOCK, product.getQuantity() + "");
+		map.put(SnapUpResult.UNPAID, "ture");
+		map.put(SnapUpResult.PRICE, product.getPrice() + "");
+		RedisManager.hmset(key, map);
+	}
+	
+
+	/**
+	 * 列出内存中活动的商品
+	 * @param activityId
+	 */
+	public void listActivityProduct(String activityId) {
+		Set<String> keys = RedisManager.keys(Consts.REDIS_STOCK + activityId + ":*");
+		for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+			String key = (String) iterator.next();
+			log.info("现有活动 key " + key + " 库存与价格 " + RedisManager.hmget(key, SnapUpResult.STOCK, "price"));
+		}
+	}
+}

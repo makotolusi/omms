@@ -1,0 +1,88 @@
+package omms;
+
+import java.math.BigDecimal;
+
+import org.junit.Test;
+
+import m.w.frs.mgserver.domain.Activity;
+import m.w.frs.mgserver.domain.Product;
+import m.w.frs.mgserver.service.ActivityProductDataService;
+import m.w.sys.util.RedisManager;
+
+public class ActivityProductTest {
+
+
+	// public static void main(String[] args) throws InterruptedException {
+	// Lock lock = new ReentrantLock();
+	// log.info("初始化库存＝＝＝＝＝＝");
+	// JedisTemplate.set(Consts.REDIS_ORDER+"notenough", "");
+	// JedisTemplate.set(Consts.REDIS_ORDER+"suc", "");
+	// JedisTemplate.set(Consts.REDIS_ORDER+"key", "");
+	// JedisTemplate.del(Consts.REDIS_PREFIX+"test:oneTokenSnapUpTimeList");
+	// ActivityProductCacheService as=new ActivityProductCacheService();
+	// as.initTest();
+	// as.listActivityProduct("10");
+	//
+	//// s.snapup("lusi1", 5);
+	//
+	// SnapUp order=new SnapUp(10, "A0001", "xyz");
+	// log.info("现有产品 key "+order.getStockKey()+" 库存
+	// "+JedisTemplate.hmget(order.getStockKey(),"stock"));
+	// // 创建一个固定大小的线程池
+	// ExecutorService pool = Executors.newFixedThreadPool(1000);
+	//// final String[] names=new String[]{"张三","李斯","静静"};
+	// Date start = new Date();
+	// log.info("整个抢购 time " + start.getTime());
+	// for (int i = 0; i < 500; i++) {
+	//// Thread.sleep(100);
+	//// System.out.println("创建三个抢购 " + i);
+	//// SnapUpRunnable run = new SnapUpRunnable();
+	// SnapUpLock run = new SnapUpLock();
+	// run.name="抢购者"+i;
+	// run.snapUp=order;
+	//// run.lock=lock;
+	//// SnapUp order=new SnapUp(10, "A0002", "xyz");
+	// order.setCount(10);
+	// run.order=order;
+	// // 在未来某个时间执行给定的命令
+	// pool.execute(run);
+	// }
+	//
+	// // 关闭启动线程
+	// pool.shutdown();
+	// // 等待子线程结束，再继续执行下面的代码
+	// pool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+	// Date end = new Date();
+	// JedisTemplate.set("ALL",
+	// (float) (end.getTime() - start.getTime()) / 1000 + "");
+	// System.out.println("all thread complete");
+	//
+	// log.info("最终库存变化=========");
+	// as.listActivityProduct("10");
+	//
+	// log.info("成功 "+JedisTemplate.get(Consts.REDIS_ORDER+"suc")+" 库存不足
+	// "+JedisTemplate.get(Consts.REDIS_ORDER+"notenough")+" watch需要重试
+	// "+JedisTemplate.get(Consts.REDIS_ORDER+"key"));
+	//
+	//
+	// log.info("单个线程时间（去重复）
+	// "+JedisTemplate.sort(Consts.REDIS_PREFIX+"test:oneTokenSnapUpTimeList"));
+	// }
+	@Test
+	public void initTest() {
+		RedisManager redis=RedisManager.getInstance();
+		redis.connect("okeasy.eicp.net");
+		String[] str = new String[] { "10:A0001:10000:10000", "10:A0002:10:500", "10:A0003:32:20", "10:A0004:34:10",
+				"10:A0005:7:5", "10:A0006:1:1" };
+		for (int i = 0; i < str.length; i++) {
+			ActivityProductDataService ap = new ActivityProductDataService();
+			Activity activity = new Activity();
+			activity.setId(Long.parseLong(str[i].split(":")[0]));
+			Product product = new Product();
+			product.setQuantity(Integer.parseInt(str[i].split(":")[2]));
+			product.setProductCode(str[i].split(":")[1]);
+			product.setPrice(new BigDecimal(str[i].split(":")[3]));
+//			ap.addActivityProductToCache(activity, product);
+		}
+	}
+}

@@ -1,0 +1,264 @@
+package m.w.sys.util;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import m.w.App;
+import m.w.frs.mgserver.service.snapup.SnapupOrderExpireSubscribe;
+
+import org.nutz.ioc.loader.annotation.IocBean;
+
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+
+@IocBean
+public class RedisManager {
+	private static final RedisManager instance = new RedisManager();
+	private static JedisPool pool;
+
+	private RedisManager() {
+	}
+
+	public final static RedisManager getInstance() {
+		if (pool == null) {
+			connect();
+		}
+		return instance;
+	}
+
+	public final static void init() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				RedisManager.getInstance().getJedis()
+						.psubscribe(new SnapupOrderExpireSubscribe(), "*");
+				RedisManager.getInstance().getJedis().close();
+			}
+		}).start();
+	}
+
+	public static void connect() {
+		if (pool == null) {
+			// Create and set a JedisPoolConfig
+			JedisPoolConfig poolConfig = new JedisPoolConfig();
+			// Tests whether connection is dead when connection
+			// retrieval method is called
+			poolConfig.setTestOnBorrow(true);
+			/* Some extra configuration */
+			// Tests whether connection is dead when returning a
+			// connection to the pool
+			poolConfig.setTestOnReturn(true);
+			// Number of connections to Redis that just sit there
+			// and do nothing
+			poolConfig.setMaxIdle(10);
+			poolConfig.setMaxTotal(100);
+			// Minimum number of idle connections to Redis
+			// These can be seen as always open and ready to serve
+			poolConfig.setMinIdle(1);
+			// Tests whether connections are dead during idle periods
+			poolConfig.setTestWhileIdle(true);
+			// Maximum number of connections to test in each idle check
+			poolConfig.setNumTestsPerEvictionRun(10);
+			// Idle connection checking period
+			poolConfig.setTimeBetweenEvictionRunsMillis(60000);
+			// Create the jedisPool
+			pool = new JedisPool(poolConfig, App.getRedisUrl(),
+					Integer.parseInt(App.getRedisPort()), 2000,
+					App.getRedisPass(), 0, App.getRedisDb());
+			System.out.println(pool.hashCode());
+		}
+	}
+
+	public static void connect(String url) {
+		if (pool == null) {
+			// Create and set a JedisPoolConfig
+			JedisPoolConfig poolConfig = new JedisPoolConfig();
+			// Tests whether connection is dead when connection
+			// retrieval method is called
+			poolConfig.setTestOnBorrow(true);
+			/* Some extra configuration */
+			// Tests whether connection is dead when returning a
+			// connection to the pool
+			poolConfig.setTestOnReturn(true);
+			// Number of connections to Redis that just sit there
+			// and do nothing
+			poolConfig.setMaxIdle(10);
+			poolConfig.setMaxTotal(100);
+			// Minimum number of idle connections to Redis
+			// These can be seen as always open and ready to serve
+			poolConfig.setMinIdle(1);
+			// Tests whether connections are dead during idle periods
+			poolConfig.setTestWhileIdle(true);
+			// Maximum number of connections to test in each idle check
+			poolConfig.setNumTestsPerEvictionRun(10);
+			// Idle connection checking period
+			poolConfig.setTimeBetweenEvictionRunsMillis(60000);
+			// Create the jedisPool
+			// pool = new JedisPool(poolConfig, App.getRedisUrl(),
+			// Integer.parseInt(App.getRedisPort()), 2000, App.getRedisPass(),
+			// 0, App.getRedisDb());
+			pool = new JedisPool(poolConfig, url, 6379, 2000, "mg123456", 0,
+					"mgserver");
+		}
+	}
+
+	public void release() {
+		pool.destroy();
+	}
+
+	public static Jedis getJedis() {
+		RedisManager.connect();
+		return pool.getResource();
+	}
+
+	public static void returnJedis(Jedis jedis) {
+		jedis.close();
+	}
+	
+	public static void returnJedis() {
+		getJedis().close();
+	}
+	
+	public static void hmset(String key, Map<String, String> map) {
+		Jedis jedis = null;
+		try {
+			jedis = getJedis();// cache
+			jedis.hmset(key, map);
+		} catch (Exception e) {
+		} finally {
+			jedis.close();
+		}
+	}
+
+	public static void set(String key, String value) {
+		Jedis jedis = null;
+		try {
+
+			jedis = getJedis();// cache
+			jedis.set(key, value);
+		} catch (Exception e) {
+		} finally {
+			jedis.close();
+		}
+	}
+
+	public static List<String> hmget(String key, String... fields) {
+		Jedis jedis = null;
+		try {
+			jedis = getJedis();// cache
+			return jedis.hmget(key, fields);
+		} catch (Exception e) {
+			return null;
+		} finally {
+			jedis.close();
+		}
+	}
+
+	public static String hget(String key, String fields) {
+		Jedis jedis = null;
+		try {
+			jedis = getJedis();// cache
+			return jedis.hget(key, fields);
+		} catch (Exception e) {
+			return null;
+		} finally {
+			jedis.close();
+		}
+	}
+
+	public static void hset(String key, String field,String value) {
+		Jedis jedis = null;
+		try {
+			jedis = getJedis();// cache
+			jedis.hset(key, field, value);
+		} catch (Exception e) {
+		} finally {
+			jedis.close();
+		}
+	}
+
+	public static String get(String key) {
+		Jedis jedis = null;
+		try {
+
+			jedis = getJedis();// cache
+			return jedis.get(key);
+		} catch (Exception e) {
+			return null;
+		} finally {
+			jedis.close();
+		}
+	}
+
+	public static void set(String key, String value, int seconds) {
+		Jedis jedis = null;
+		try {
+			jedis = getJedis();// cache
+			jedis.set(key, value);
+			jedis.expire(key, seconds);
+		} catch (Exception e) {
+		} finally {
+			jedis.close();
+		}
+	}
+
+	public static Set<String> keys(String keys) {
+		Jedis jedis = null;
+		try {
+			jedis = getJedis();// cache
+			return jedis.keys(keys);
+		} catch (Exception e) {
+			return null;
+		} finally {
+			jedis.close();
+		}
+	}
+
+	public static void sadd(String key, String value) {
+		Jedis jedis = null;
+		try {
+			jedis = getJedis();// cache
+			jedis.sadd(key, value);
+		} catch (Exception e) {
+		} finally {
+			jedis.close();
+		}
+	}
+
+	public static List<String> sort(String key) {
+		Jedis jedis = null;
+		try {
+			jedis = getJedis();// cache
+			return jedis.sort(key);
+		} catch (Exception e) {
+			return null;
+		} finally {
+			jedis.close();
+		}
+	}
+
+	public static void del(String key) {
+		Jedis jedis = null;
+		try {
+			jedis = getJedis();// cache
+			jedis.del(key);
+		} catch (Exception e) {
+		} finally {
+			jedis.close();
+		}
+	}
+
+	public static boolean exists(String key) {
+		Jedis jedis = null;
+		try {
+			jedis = getJedis();// cache
+			return jedis.exists(key);
+		} catch (Exception e) {
+			return false;
+		} finally {
+			jedis.close();
+		}
+	}
+}

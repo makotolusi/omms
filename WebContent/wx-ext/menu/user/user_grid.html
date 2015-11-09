@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Actions Example</title>
+    <link rel="stylesheet" type="text/css" href="../../shared/example.css" />
+        <link rel="stylesheet" type="text/css" href="../../shared/htmleditor/ux-all.css" />
+    <!-- GC -->
+     
+      <script type="text/javascript" src="../Global.js"></script>
+<script type="text/javascript" src="../../shared/include-ext.js"></script>
+    <script type="text/javascript" src="../../shared/options-toolbar.js"></script>
+    <script type="text/javascript" src="../../shared/examples.js"></script>
+ <script type="text/javascript" src="../../shared/htmleditor/Ext.ux.form.plugin.HtmlEditor.js"></script>
+
+    
+    <!-- page specific -->
+    <style type="text/css">
+        /* style rows on mouseover */
+        .x-grid-row-over .x-grid-cell-inner {
+            font-weight: bold;
+        }
+
+        /* Style the buyAction Components; Button and MenuItem */
+        .buy-button {
+            background-image: url(../../shared/icons/fam/accept.png) !important;
+			background-repeat: no-repeat !important;
+        }
+    </style>
+    <script type="text/javascript" src="../agent/AgentForm.js"></script>
+    <script type="text/javascript" src="UserGrid.js"></script>
+    <script type="text/javascript">
+    
+    Ext.onReady(function() {
+    	Ext.QuickTips.init();
+    	// create the Grid
+    	var grid = Ext.create('user.UserGrid', {
+    		renderTo : 'grid-example',
+    		title : '商业用户管理'
+    	});
+    	var sellAction = Ext.create('Ext.Action', {
+    		iconCls : 'icon-user-add', // Use a URL in the icon config
+    		text : '更新经销商',
+    		id:'add-agent-action',
+    		disabled : true,
+    		handler : function(widget, event) {
+    			var rec = grid.getSelectionModel().getSelection()[0];
+    			if (rec) {
+    				//create window
+    				var win = Ext.create('Ext.window.Window', {
+    					title : '更新经销商',
+    					height : 130,
+    					width : 300,
+    					layout : 'fit',
+    					id:'agent-profitratio-win',
+    					modal : true,
+    					items : {
+    						xtype : 'form-agent',
+    						profitRatio:rec.get('profitRatio'),
+    						agentId : rec.get('id'),
+    						winId:'agent-profitratio-win',
+    						gridId:'userGrid'
+    					}
+    				}).show();
+    			}
+    		}
+    	});
+    	var roleDeleteAction = Ext.create('Ext.Action', {
+    		iconCls : 'icon-user-delete', // Use a URL in the icon config
+    		text : '取消经销商资格',
+    		disabled : true,
+    		handler : function(widget, event) {
+    			Ext.MessageBox.confirm('Confirm', '确认取消资格吗?', function(btn, text) {
+    				if (btn == 'yes') {
+    					var rec = grid.getSelectionModel().getSelection()[0];
+    					if (rec) {
+    						Ext.Ajax.request({
+    							url : ROOT_URL + '../commerceuser/updateRole',
+    							method : 'POST',
+    							params : {id:rec.get("id"),role:"MEMBER"},
+    							success : function(response) {
+    								var text = response.responseText;
+    								Ext.MessageBox.alert('提示', '成功', function() {
+    										var p = Ext.getCmp('userGrid');
+    										p.getStore().reload();
+
+    								}, this);
+
+    							},
+    							failure : function(response) {
+    								var text = response.responseText;
+    								Ext.MessageBox.alert('提示', '失败:' + text, function() {
+    									var p = Ext.getCmp('userGrid');
+    									p.getStore().reload();
+    								}, this);
+    							}
+    						});
+    					}
+    				}
+    			});
+    		}
+    	});
+    	
+    	Ext.getCmp('user-grid-toolbar').add(sellAction,'-',roleDeleteAction);
+    	grid.getSelectionModel().on({
+    		selectionchange : function(sm, selections) {
+    			if (selections.length) {
+					//if(sm.selected.first().data.role!='AGENT')
+						sellAction.enable();
+						roleDeleteAction.enable();
+				} else {
+						sellAction.disable();
+						roleDeleteAction.disable();
+				}
+    		}
+    	});
+    });
+
+    </script>
+</head>
+<body>
+
+    <div id="grid-example" style="overflow:auto; "></div>
+</body>
+</html>

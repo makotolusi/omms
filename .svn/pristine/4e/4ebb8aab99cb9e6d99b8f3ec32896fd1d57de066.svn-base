@@ -1,0 +1,93 @@
+package m.w.frs.mgserver.domain;
+
+/**
+ * 订单抢购结果
+ * 
+ * @author lusi
+ * 
+ */
+public class SnapUpResult {
+
+	public static final String STOCK = "stock";
+	public static final String UNPAID = "unpaid";
+	public static final String PRICE = "price";
+	private OrderDetail order;
+	private CODE code;// 抢购结果
+	private String codeIndex;// 抢购
+	private String codeString;// 抢购
+	private int stock;// 库存
+
+	public SnapUpResult(OrderDetail order) {
+		this.order = order;
+	}
+
+	public SnapUpResult(CODE code, int stock, OrderDetail order) {
+		super();
+		this.code = code;
+		this.stock = stock;
+		this.order = order;
+	}
+
+	public CODE getCode() {
+		return code;
+	}
+
+	public void setCode(CODE code) {
+		this.code = code;
+	}
+
+	public int getStock() {
+		return stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+
+	public OrderDetail getOrder() {
+		return order;
+	}
+
+	public void setOrder(OrderDetail order) {
+		this.order = order;
+	}
+
+	
+	public String getCodeIndex() {
+		return code.getIndex()+"";
+	}
+
+	public void setCodeIndex(String codeIndex) {
+		this.codeIndex = codeIndex;
+	}
+
+	public String getCodeString() {
+		return code.getValue();
+	}
+
+	public void setCodeString(String codeString) {
+		this.codeString = codeString;
+	}
+
+
+	public enum CODE {
+		SUCCESS("抢购成功", 100), STOCK_NOT_ENOUGH("该商品库存不足", 101), EXCEPTION(
+				"抢购异常", 102), NONE_ACTIVITY("活动不存在", 103), NONE_PRODUCT(
+				"产品不存在", 104), STOCK_NULL("库存NULL", 105);
+
+		private final String value;
+		private final Integer index;
+
+		CODE(String value, Integer index) {
+			this.value = value;
+			this.index = index;
+		}
+
+		public String getValue() {
+			return value;
+		}
+		public Integer getIndex() {
+			return index;
+		}
+	}
+}

@@ -1,0 +1,34 @@
+package m.w.frs.mgserver.service;
+
+import java.util.List;
+
+import m.w.core.service.WxIdService;
+import m.w.frs.mgserver.domain.Activity;
+import m.w.sys.quartz.domain.PicConfig;
+import m.w.sys.service.FileService;
+
+import org.nutz.dao.Cnd;
+import org.nutz.ioc.loader.annotation.Inject;
+import org.nutz.ioc.loader.annotation.IocBean;
+
+@IocBean(fields = "dao")
+public class ActivityService extends WxIdService<Activity> {
+
+	public static final String RUSH_STATUS = "1";
+
+	@Inject
+	private FileService fileService;
+
+	public Object getActivity(String appUserId,String token) {
+
+		List<Activity> as = this.query(Cnd
+				.where("rushStatus", "=", RUSH_STATUS).desc("entertime"), null);
+
+		for (Activity a : as) {
+			String url = fileService.getQiniuPrivateUrl(a.getImgUrl(),token);
+			a.setImgUrl(url);
+		}
+
+		return as;
+	}
+}

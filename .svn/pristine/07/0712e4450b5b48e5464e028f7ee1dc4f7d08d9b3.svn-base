@@ -1,0 +1,11 @@
+package m.w.sys.service;
+
+import m.w.core.service.WxIdService;
+import m.w.sys.domain.CommerceUser;
+
+import org.nutz.ioc.loader.annotation.IocBean;
+
+@IocBean(fields = "dao")
+public class CommerceUserService extends WxIdService<CommerceUser> {
+
+}

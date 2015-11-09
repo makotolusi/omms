@@ -1,0 +1,234 @@
+package m.w.frs.mgserver.domain;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Map;
+
+import m.w.core.dao.IdEntity;
+import m.w.frs.mgserver.domain.Order.Status;
+import m.w.sys.util.Consts;
+import m.w.sys.util.WrapSupport;
+
+import org.nutz.dao.entity.annotation.ColDefine;
+import org.nutz.dao.entity.annotation.ColType;
+import org.nutz.dao.entity.annotation.Column;
+import org.nutz.dao.entity.annotation.Comment;
+import org.nutz.dao.entity.annotation.Id;
+import org.nutz.dao.entity.annotation.One;
+import org.nutz.dao.entity.annotation.Table;
+
+/**
+ * 抢购订单
+ * 
+ * @author lusi
+ * 
+ */
+
+@Table("tbl_orderdetail")
+@Comment("订单明细")
+public class OrderDetail extends WrapSupport implements Serializable, IdEntity{
+
+	public static final String STOCK = "stock";
+	public static final String UNPAID = "unpaid";
+	public static final String PRICE = "price";
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column
+	private Long id;
+
+	@Column
+	private Long orderId;
+
+	@Column("activityId")
+	private Long activityId;
+
+	@One(target = Activity.class, field = "activityId")
+	public Activity activity;
+
+	@Column("count")
+	private Integer count;
+
+	@Column("productCode")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1000)
+	private String productCode;
+
+	public Product product;
+
+	/** 状态 */
+	@Column("status")
+	protected Status status = Status.WAITING_CONFIRM;
+
+	private CODE code;// 抢购结果
+	private String codeIndex;// 抢购
+	private String codeString;// 抢购
+	private int stock = 0;// 库存
+	@Column
+	private BigDecimal price;// 价格
+
+	private String orderCode;
+
+	public Long getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(Long activityId) {
+		this.activityId = activityId;
+	}
+
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+	public Long getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(Long orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getOrderCode() {
+		return orderCode;
+	}
+
+	public void setOrderCode(String orderCode) {
+		this.orderCode = orderCode;
+	}
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+
+	public String getOrderDetailKey() {
+		return Consts.REDIS_ORDER + orderCode + Consts.REDIS_SPLIT
+				+ this.getActivityId() + Consts.REDIS_SPLIT
+				+ this.getProductCode() + Consts.REDIS_SPLIT + getCount();
+	}
+
+	public String getStockKey() {
+		return Consts.REDIS_STOCK + this.getActivityId() + Consts.REDIS_SPLIT
+				+ this.getProductCode();
+	}
+
+	public String getActivityKey() {
+		return Consts.REDIS_STOCK + this.getActivityId();
+	}
+
+	@Override
+	public String toString() {
+		return "OrderDetail [id=" + id + ", orderId=" + orderId
+				+ ", activityId=" + activityId + ", count=" + count
+				+ ", productCode=" + productCode + ", price=" + price + "]";
+	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
+	public CODE getCode() {
+		return code;
+	}
+
+	public void setCode(CODE code) {
+		this.code = code;
+	}
+
+	public String getCodeIndex() {
+		return codeIndex;
+	}
+
+	public void setCodeIndex(String codeIndex) {
+		this.codeIndex = codeIndex;
+	}
+
+	public String getCodeString() {
+		return codeString;
+	}
+
+	public void setCodeString(String codeString) {
+		this.codeString = codeString;
+	}
+
+	public int getStock() {
+		return stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	@Override
+	public Long getId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public Activity getActivity() {
+		return activity;
+	}
+
+	public void setActivity(Activity activity) {
+		this.activity = activity;
+	}
+
+	public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+
+
+	public enum CODE {
+		SUCCESS("抢购成功", 100), STOCK_NOT_ENOUGH("该商品库存不足", 101), EXCEPTION(
+				"抢购异常", 102), NONE_ACTIVITY("活动不存在", 103), NONE_PRODUCT(
+				"产品不存在", 104), STOCK_NULL("库存NULL", 105);
+
+		private final String value;
+		private final Integer index;
+
+		CODE(String value, Integer index) {
+			this.value = value;
+			this.index = index;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public Integer getIndex() {
+			return index;
+		}
+	}
+
+}

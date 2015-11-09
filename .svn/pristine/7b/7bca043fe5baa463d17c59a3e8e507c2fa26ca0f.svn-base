@@ -1,0 +1,58 @@
+package m.w.frs.mgserver.domain;
+
+import m.w.sys.util.Consts;
+
+/**
+ * 抢购订单
+ * @author lusi
+ *
+ */
+public class SnapUpOrder {
+
+	private Integer activityId;
+	private Integer count;
+	private String productCode;
+	private String token;
+	public Integer getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(Integer activityId) {
+		this.activityId = activityId;
+	}
+
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+	
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getOrderKey(){
+		return Consts.REDIS_ORDER+this.getActivityId()+":"+this.getProductCode()+":"+this.getToken()+":"+getCount();
+	}
+	
+	public String getStockKey() {
+		return Consts.REDIS_STOCK + this.getActivityId() + ":" + this.getProductCode();
+	}
+	public String getActivityKey() {
+		return Consts.REDIS_STOCK + this.getActivityId();
+	}
+}

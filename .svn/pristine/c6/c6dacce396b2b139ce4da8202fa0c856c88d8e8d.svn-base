@@ -1,0 +1,361 @@
+package m.w.frs.mgserver.domain;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
+import m.w.core.dao.IdEntity;
+import m.w.sys.util.WrapSupport;
+
+import org.nutz.dao.entity.annotation.ColDefine;
+import org.nutz.dao.entity.annotation.ColType;
+import org.nutz.dao.entity.annotation.Column;
+import org.nutz.dao.entity.annotation.Comment;
+import org.nutz.dao.entity.annotation.Id;
+import org.nutz.dao.entity.annotation.Table;
+
+@Table("tbl_product")
+@Comment("用户")
+public class Product extends WrapSupport implements Serializable, IdEntity {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 169680150134582562L;
+
+	@Id
+	@Column
+	private Long id;
+
+	/** code */
+	@Column
+	@ColDefine(notNull = true, type = ColType.VARCHAR, width = 50)
+	private String productCode;
+
+	/** 名称 */
+	@Column
+	@ColDefine(notNull = true, type = ColType.VARCHAR, width = 50)
+	private String name;
+
+	/** 名称 */
+	@Column
+	private BigDecimal price;
+
+	/** 名称 */
+	private String priceFormat;
+	
+	@Column
+	private int quantity = 1;
+	private int total = 0;
+
+	/** description */
+	@Column("description")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String description;
+
+	/** experience */
+	@Column("experience")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String experience;
+
+	/** currency */
+	@Column("currency")
+	protected String currency;
+
+	/** addr */
+	@Column("addr")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String addr;
+
+	@Column
+	protected int piece = 0;
+
+	@Column
+	private Long userId;
+
+	/** picUrl1 */
+	@Column("picUrl1")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String picUrl1;
+
+	@Column("picUrl2")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String picUrl2;
+
+	@Column("picUrl3")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String picUrl3;
+
+	@Column("picUrl4")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String picUrl4;
+
+	@Column("picUrl5")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String picUrl5;
+
+	@Column("picUrl6")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String picUrl6;
+
+	@Column("picUrl7")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String picUrl7;
+
+	@Column("picUrl8")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String picUrl8;
+
+	@Column("picUrl9")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String picUrl9;
+
+	@Column("picUrl10")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String picUrl10;
+
+	@Column
+	@ColDefine(notNull = true, type = ColType.VARCHAR, width = 100)
+	private String systemName;
+
+	/** 时间 */
+	@Column
+	private Date entertime;
+	/** 名称 */
+	@Column
+	@ColDefine(notNull = true, type = ColType.VARCHAR, width = 50)
+	private String username;
+
+	@Column
+	private String pieceCategory;// 板块类别，1：商品板块 9：拯救板块
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+
+	public int getTotal() {
+		return total;
+	}
+
+	public void setTotal(int total) {
+		this.total = total;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getExperience() {
+		return experience;
+	}
+
+	public void setExperience(String experience) {
+		this.experience = experience;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	public String getAddr() {
+		return addr;
+	}
+
+	public void setAddr(String addr) {
+		this.addr = addr;
+	}
+
+	public String getPicUrl1() {
+		return picUrl1;
+	}
+
+	public void setPicUrl1(String picUrl1) {
+		this.picUrl1 = picUrl1;
+	}
+
+	public String getPicUrl2() {
+		return picUrl2;
+	}
+
+	public void setPicUrl2(String picUrl2) {
+		this.picUrl2 = picUrl2;
+	}
+
+	public String getPicUrl3() {
+		return picUrl3;
+	}
+
+	public void setPicUrl3(String picUrl3) {
+		this.picUrl3 = picUrl3;
+	}
+
+	public String getPicUrl4() {
+		return picUrl4;
+	}
+
+	public void setPicUrl4(String picUrl4) {
+		this.picUrl4 = picUrl4;
+	}
+
+	public String getPicUrl5() {
+		return picUrl5;
+	}
+
+	public void setPicUrl5(String picUrl5) {
+		this.picUrl5 = picUrl5;
+	}
+
+	public String getPicUrl6() {
+		return picUrl6;
+	}
+
+	public void setPicUrl6(String picUrl6) {
+		this.picUrl6 = picUrl6;
+	}
+
+	public String getPicUrl7() {
+		return picUrl7;
+	}
+
+	public void setPicUrl7(String picUrl7) {
+		this.picUrl7 = picUrl7;
+	}
+
+	public String getPicUrl8() {
+		return picUrl8;
+	}
+
+	public void setPicUrl8(String picUrl8) {
+		this.picUrl8 = picUrl8;
+	}
+
+	public String getPicUrl9() {
+		return picUrl9;
+	}
+
+	public void setPicUrl9(String picUrl9) {
+		this.picUrl9 = picUrl9;
+	}
+
+	public String getPicUrl10() {
+		return picUrl10;
+	}
+
+	public void setPicUrl10(String picUrl10) {
+		this.picUrl10 = picUrl10;
+	}
+
+	public String getSystemName() {
+		return systemName;
+	}
+
+	public void setSystemName(String systemName) {
+		this.systemName = systemName;
+	}
+
+	public Date getEntertime() {
+		return entertime;
+	}
+
+	public void setEntertime(Date entertime) {
+		this.entertime = entertime;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public int getPiece() {
+		return piece;
+	}
+
+	public void setPiece(int piece) {
+		this.piece = piece;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public String getPieceCategory() {
+		return pieceCategory;
+	}
+
+	public void setPieceCategory(String pieceCategory) {
+		this.pieceCategory = pieceCategory;
+	}
+	
+	public String getPriceFormat() {
+		return priceFormat;
+	}
+
+	public void setPriceFormat(String priceFormat) {
+		this.priceFormat = priceFormat;
+	}
+
+
+	public enum CURRENCY {
+		CN("RMB"), JP("JPY"),US("USD");
+		private final String value;
+
+		CURRENCY(String value) {
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+	}
+}

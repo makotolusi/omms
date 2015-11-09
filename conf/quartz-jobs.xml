@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job-scheduling-data xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
+    version="2.0">
+    
+    <pre-processing-commands>
+        <delete-jobs-in-group>*</delete-jobs-in-group>  <!-- clear all jobs in scheduler -->
+        <delete-triggers-in-group>*</delete-triggers-in-group> <!-- clear all triggers in scheduler -->
+    </pre-processing-commands>
+    
+    <processing-directives>
+        <!-- if there are any jobs/trigger in scheduler of same name (as in this file), overwrite them -->
+        <overwrite-existing-data>true</overwrite-existing-data>
+        <!-- if there are any jobs/trigger in scheduler of same name (as in this file), and over-write is false, ignore them rather then generating an error -->
+        <ignore-duplicates>false</ignore-duplicates> 
+    </processing-directives>
+    
+    <schedule>
+	    <job>
+			<name>测试任务0</name>
+			<group>testJobs</group>
+			<description>测试任务0号</description>
+			<job-class>m.w.sys.quartz.SimpleIocMethodInvokingJob</job-class>
+			<durability>false</durability>
+			<recover>false</recover>
+			<job-data-map>
+				<entry>
+					<key>targetClass</key>
+					<value>m.w.sys.service.UserService</value>
+				</entry>
+				<entry>
+					<key>targetObject</key>
+					<value>userService</value>
+				</entry>
+				<entry>
+					<key>targetMethod</key>
+					<value>getMaxId</value>
+				</entry>
+			</job-data-map>
+	    </job>
+
+	    <trigger>
+			<cron>
+				<name>testTrigger1</name>
+				<group>testJobs</group>
+				<description>Test Trigger Number 1</description>
+				<job-name>测试任务0</job-name>
+				<job-group>testJobs</job-group>
+				<calendar-name>workTimeCalendar</calendar-name>
+	            <!--
+	            <misfire-instruction>MISFIRE_INSTRUCTION_SMART_POLICY</misfire-instruction>
+
+	            <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+	            -->
+	            <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+				<cron-expression>0 0/5 * ? * *</cron-expression>
+				<time-zone>Asia/ShangHai</time-zone>
+			</cron>
+	    </trigger>
+    </schedule>    
+    <schedule>
+	    <job>
+			<name>项目同步</name>
+			<group>projectJobs</group>
+			<description>项目同步</description>
+			<job-class>m.w.sys.quartz.SimpleIocMethodInvokingJob</job-class>
+			<durability>false</durability>
+			<recover>false</recover>
+			<job-data-map>
+				<entry>
+					<key>targetClass</key>
+					<value>m.w.ztjs.ppms.service.ProjectInfoService</value>
+				</entry>
+				<entry>
+					<key>targetObject</key>
+					<value>projectInfoService</value>
+				</entry>
+				<entry>
+					<key>targetMethod</key>
+					<value>syncProject</value>
+				</entry>
+			</job-data-map>
+	    </job>
+	    
+	    <trigger>
+			<cron>
+				<name>testTrigger2</name>
+				<group>projectJobs</group>
+				<description>Test Trigger Number 2</description>
+				<job-name>项目同步</job-name>
+				<job-group>projectJobs</job-group>
+	            <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+				<cron-expression>0 15 10 L * ?</cron-expression>
+				<time-zone>Asia/ShangHai</time-zone>
+			</cron>
+	    </trigger>
+    </schedule>
+</job-scheduling-data>

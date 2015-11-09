@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Actions Example</title>
+    <link rel="stylesheet" type="text/css" href="../../shared/example.css" />
+        <link rel="stylesheet" type="text/css" href="../../shared/htmleditor/ux-all.css" />
+    <!-- GC -->
+     
+      <script type="text/javascript" src="../Global.js"></script>
+<script type="text/javascript" src="../../shared/include-ext.js"></script>
+    <script type="text/javascript" src="../../shared/options-toolbar.js"></script>
+    <script type="text/javascript" src="../../shared/examples.js"></script>
+ <script type="text/javascript" src="../../shared/htmleditor/Ext.ux.form.plugin.HtmlEditor.js"></script>
+
+    
+    <!-- page specific -->
+    <style type="text/css">
+        /* style rows on mouseover */
+        .x-grid-row-over .x-grid-cell-inner {
+            font-weight: bold;
+        }
+
+        /* Style the buyAction Components; Button and MenuItem */
+        .buy-button {
+            background-image: url(../../shared/icons/fam/accept.png) !important;
+			background-repeat: no-repeat !important;
+        }
+    </style>
+    <script type="text/javascript" src="OrderDetailsGrid.js"></script>
+    <script type="text/javascript" src="OrderGrid.js"></script>
+    <script type="text/javascript">
+    
+    Ext.onReady(function() {
+    	Ext.QuickTips.init();
+    	// create the Grid
+    	var grid = Ext.create('order.OrderGrid', {
+    		renderTo : 'grid-example'
+    	});
+    });
+
+    </script>
+</head>
+<body>
+
+    <div id="grid-example" style="overflow:auto; "></div>
+</body>
+</html>

@@ -1,0 +1,431 @@
+package m.w;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+
+import m.w.init.Initializers;
+import m.w.mg.sso.util.UserUtils;
+import m.w.sys.util.Users;
+
+import org.apache.shiro.crypto.hash.SimpleHash;
+import org.nutz.ioc.impl.PropertiesProxy;
+import org.nutz.lang.Streams;
+import org.nutz.lang.Strings;
+import org.nutz.lang.Times;
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
+import org.nutz.mvc.NutConfig;
+import org.quartz.Scheduler;
+
+public abstract class App {
+    private static Log log = Logs.get();
+
+    private static boolean inited = false;
+
+    private static NutConfig cfg;
+    private static Properties prop;
+    private static Properties up = new Properties();
+    
+    /** 系统中所有实现了Flowable接口的类 */
+    private static List<Class<?>> flowables;
+    
+    /** 应用启动时间 */
+    private static Date startupTime;
+
+    /** 应用启动时间串 */
+    private static String ver;
+
+    /** 应用启动时间串 */
+    private static String build;
+    
+    private static final String SALT = "Wx.root.2012";
+    private static final String SHA1 = "SHA-1";
+    private static final String UP = "up.properties";
+    private static final String RT = "rt";
+    private static final String ROOT = "root";
+    private static final String XMAN = "xman";
+    
+    static Scheduler scheduler = null;
+    
+    public static Scheduler getScheduler(){
+        return scheduler;
+    }
+
+    /** 初始化应用相关设置 */
+    public static void init(NutConfig config) {
+        if (inited) {
+            return;
+        }
+        log.info("开始初始化App...");
+        cfg = config;
+        prop = cfg.getIoc().get(PropertiesProxy.class, "config").toProperties();
+        try {
+            up.load(Streams.fileIn(UP));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Initializers.doInit();
+
+        log.info("App初始化完毕！");
+        startupTime = new Date(System.currentTimeMillis());
+        ver = Times.format(new SimpleDateFormat("yyyyMMddHHmmss"), startupTime);
+        build = Times.format(new SimpleDateFormat("yyyy-MM-dd"), startupTime);
+        inited = true;
+    }
+    
+    public static boolean isRootAccount(String name){
+        return ROOT.equals(name);
+    }
+    
+    public static boolean isXmanAccount(String name){
+        return XMAN.equals(name);
+    }
+    
+    public static boolean isMatchRoot(String name, String password){
+        if(ROOT.equals(name) && !Strings.isBlank(password)){
+            return new SimpleHash(SHA1, password, SALT).toString().equals(up.getProperty(RT));
+        }
+        return false;
+    }
+    
+    public static boolean isMatchXman(String name, String password){
+        if(XMAN.equals(name) && !Strings.isBlank(password)){
+            return new SimpleHash(SHA1, password, SALT).toString().equals(up.getProperty(RT));
+        }
+        return false;
+    }
+    
+    public static boolean resetRoot(String oldPassword, String newPassword){
+        if(!isMatchRoot(ROOT, oldPassword)){
+            return false;
+        }
+        up.setProperty(RT, new SimpleHash(SHA1, newPassword, SALT).toString());
+        try {
+            up.store(Streams.fileOut(UP), "");
+            return true;
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    public static boolean isRoot(){
+        return ROOT.equals(UserUtils.CurrentUser().getUsername());
+    }
+    
+    public static boolean isXman(){
+        return XMAN.equalsIgnoreCase(UserUtils.CurrentUser().getUsername());
+    }
+
+    /**
+     * 获取配置NutConfig信息
+     * 
+     * @return
+     */
+    public static NutConfig getConfig() {
+        return cfg;
+    }
+
+    /**
+     * 当前应用的根路径，末尾没有/
+     * 
+     * @return
+     */
+    public static String getAppRoot() {
+        return cfg.getAppRoot();
+    }
+    
+    /**
+     * 当前应用的class路径，末尾没有/
+     * @return
+     */
+    public static String getClassRoot(){
+    	return getAppRoot() + "/WEB-INF/classes";
+    }
+
+    /**
+     * 当前应用的主页
+     * 
+     * @return
+     */
+    public static String getHomepage() {
+        return prop.getProperty("app.homepage", "/index");
+    }
+    
+    /**
+     * 审批的主页
+     * 
+     * @return
+     */
+    public static String getAuditpage() {
+        return prop.getProperty("app.auditpage", "/audit");
+    }
+    
+    /**
+     * 当前应用的名称
+     * 
+     * @return
+     */
+    public static String getAppName() {
+        return prop.getProperty("app.name", "MyApp");
+    }
+
+    /**
+     * 没有用户时候默认管理员的登录名
+     * 
+     * @return
+     */
+    public static String getAdminName() {
+        return prop.getProperty("app.admin.name", "admin");
+    }
+
+    /**
+     * 没有用户时候默认管理员的口令
+     * 
+     * @return
+     */
+    public static String getAdminPassword() {
+        return prop.getProperty("app.admin.password", "admin");
+    }
+    
+    /**
+     * 超级模拟用户的默认岗位
+     * @return
+     */
+    public static Long getXmanPosId() {
+        return Long.parseLong(prop.getProperty("app.xman.posid", "626"));
+    }
+    
+    
+    /**
+     * 获取配置了的法定节假日
+     * @return
+     */
+    public static String getHolidays() {
+        return prop.getProperty("app.quartz.holidays");
+    }
+    
+    public static String getWorkdays() {
+        return prop.getProperty("app.quartz.workdays");
+    }
+    
+    /**
+     * 获取工作时间的上午开始时间
+     * @return
+     */
+    public static String getAmBegin() {
+        return prop.getProperty("app.quartz.am.begin", "08:00");
+    }
+    
+    /**
+     * 获取工作时间的上午结束，默认为12:00
+     * @return
+     */
+    public static String getAmEnd() {
+        return prop.getProperty("app.quartz.am.end", "12:00");
+    }
+    
+    /**
+     * 获取工作时间的下午开始时间，默认为14:00
+     * @return
+     */
+    public static String getPmBegin() {
+        return prop.getProperty("app.quartz.pm.begin", "14:00");
+    }
+
+    /**
+     * 获取工作时间的下午结束时间，默认为18:00
+     * @return
+     */
+    public static String getPmEnd() {
+        return prop.getProperty("app.quartz.pm.end", "18:00");
+    }
+    
+
+    /**
+     * 是否自动创建数据库表
+     * 
+     * @return
+     */
+    public static boolean isAutoCreatTable() {
+        return Boolean.parseBoolean(prop.getProperty("app.isAutoCreateTable", "false"));
+    }
+
+    /**
+     * 是否强制创建数据库表
+     * 
+     * @return
+     */
+    public static boolean isForceCreatTable() {
+        return Boolean.parseBoolean(prop.getProperty("app.isForceCreateTable", "false"));
+    }
+
+    /**
+     * 是否开发模式
+     * 
+     * @return
+     */
+    public static boolean isDev() {
+        return Boolean.parseBoolean(prop.getProperty("app.isDev", "false"));
+    }
+    
+    /**
+     * 是否允许执行quartz的调度任务
+     * @return
+     */
+    public static boolean isEnableScheduler() {
+        return Boolean.parseBoolean(prop.getProperty("app.isEnableScheduler", "false"));
+    }
+
+    
+    /*
+     * 当前的版本号
+     */
+    public static String ver(){
+        return prop.getProperty("app.ver", ver);
+    }
+    
+    public static String build(){
+        return prop.getProperty("app.build", build);
+    }
+
+    public static List<Class<?>> getFlowables() {
+        return flowables;
+    }
+    /**
+     * 是否使用OpenId方式登录
+     * @return
+     */
+    public static boolean isOpenId() {
+        return Boolean.parseBoolean(prop.getProperty("app.isOpenId", "false"));
+    }
+    
+    /**
+     * OpenId登录的Endpoint
+     * @return
+     */
+	public static String getOpenIdEndpoint(){
+		return prop.getProperty("app.openid.endpoint", "https://sso.ztjs.cn/accounts/openid");
+	}
+	
+	/**
+	 * 七牛ACCESS_KEY
+	 * @return
+	 */
+	public static String getQiNiuAccessKey() {
+		return prop.getProperty("qiniu.accessKey");
+	}
+	
+	/**
+	 * 七牛SECRET_KEY	
+	 * @return
+	 */
+	public static String getQiNiuSecretKey() {
+		return prop.getProperty("qiniu.secretKey");
+	}
+	
+	/**
+	 * 七牛空间名	
+	 * @return
+	 */
+	public static String getQiNiuBucket() {
+		return prop.getProperty("qiniu.bucket");
+	}
+	
+	/**
+	 * 七牛域名
+	 * @return
+	 */
+	public static String getQiNiuDomain() {
+		return prop.getProperty("qiniu.bucket.domain");
+	}
+	
+	/**
+	 * 七牛空间是否公开
+	 * @return
+	 */
+	public static boolean getQiNiuBucketIsPublic() {
+		return "1".equals(prop.getProperty("qiniu.bucket.ispublic"));
+	}
+	
+	/**
+	 * 七牛path
+	 * @return
+	 */
+	public static String getQiNiuPrefix() {
+		return prop.getProperty("qiniu.prefix");
+	}
+	
+	/**
+	 * 高中低分辨率
+	 * 480:1080
+	 * @return
+	 */
+	public static String getResolutionRange() {
+		return prop.getProperty("resolution.range");
+	}
+	
+	/**
+	 * 高中低分辨率 对应图片
+	 * 132*132:172*172:192*192
+	 * @return
+	 */
+	public static String getPicLowResolution() {
+		return prop.getProperty("resolution.picLow");
+	}
+	/**
+	 * 高中低分辨率 对应图片
+	 * 132*132:172*172:192*192
+	 * @return
+	 */
+	public static String getPicMidResolution() {
+		return prop.getProperty("resolution.picMid");
+	}
+	
+	/**
+	 * 高中低分辨率 对应图片
+	 * 132*132:172*172:192*192
+	 * @return
+	 */
+	public static String getPicHighResolution() {
+		return prop.getProperty("resolution.picHigh");
+	}
+	
+	/**
+	 *redis url
+	 * @return
+	 */
+	public static String getRedisUrl() {
+		return prop.getProperty("redis.url");
+	}
+	
+	/**
+	 *redis port
+	 * @return
+	 */
+	public static String getRedisPort() {
+		return prop.getProperty("redis.port");
+	}
+
+	/**
+	 *redis pass
+	 * @return
+	 */
+	public static String getRedisPass() {
+		return prop.getProperty("redis.pass");
+	}
+	
+	/**
+	 *redis db
+	 * @return
+	 */
+	public static String getRedisDb() {
+		return prop.getProperty("redis.db");
+	}
+}

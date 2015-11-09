@@ -1,0 +1,91 @@
+package m.w.frs.mgserver.module.rest;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.nutz.ioc.loader.annotation.Inject;
+import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
+import org.nutz.mvc.adaptor.JsonAdaptor;
+import org.nutz.mvc.annotation.AdaptBy;
+import org.nutz.mvc.annotation.At;
+import org.nutz.mvc.annotation.POST;
+
+import m.w.core.dto.Result;
+import m.w.frs.mgserver.domain.Order;
+import m.w.frs.mgserver.domain.SnapUpResult;
+import m.w.frs.mgserver.service.snapup.ActivitySnappingUpService;
+import m.w.frs.mgserver.service.snapup.OrderService;
+
+@At("/ApCommonServices")
+@IocBean
+public class SnapUpAppServices {
+
+	@Inject
+	private ActivitySnappingUpService activitySnappingUpService;
+
+	@Inject
+	private OrderService orderService;
+
+	private static final Log log = Logs.getLog(SnapUpAppServices.class);
+
+	/** 抢购 */
+	@At({ "/snapup" })
+	@POST
+	@AdaptBy(type = JsonAdaptor.class)
+	// @Filters({ @By(type = AuthFilter.class) })
+	public Result snapup(Map<String,Order> orders, HttpServletRequest request) {
+		//1 得到订单
+		Order order = orders.get("content");
+//		orderService.dao().insertWith(order, "orderDetails");
+		//开始抢购 返回结果
+		List<SnapUpResult> result = activitySnappingUpService.snapUpOrder(order);
+		Result r = new Result();
+		if (result.isEmpty()) {
+			r.setSuccess(true);
+			return r;
+		} else {
+			r.setData(result);
+			return r;
+		}
+	}
+
+	/** 确认订单明细 支付 */
+	@At({ "/confirm" })
+	@POST
+	@AdaptBy(type = JsonAdaptor.class)
+	// @Filters({ @By(type = AuthFilter.class) })
+	public Result confirm(Map<String,Order> orders, HttpServletRequest request) {
+		try {
+			//1 得到最终确认订单与明细 持久化到mysql
+			Order order = orders.get("content");
+			orderService.dao().insertWith(order, "orderDetails");
+			//2 持久内存
+			activitySnappingUpService.confirmSnapupResult(order);
+		} catch (Exception e) {
+			return Result.err("确认订单失败");
+		}
+		return Result.ok();
+	}
+	
+	/** 取消订单 恢复库存 */
+	@At({ "/cancel" })
+	@POST
+	@AdaptBy(type = JsonAdaptor.class)
+	// @Filters({ @By(type = AuthFilter.class) })
+	public Result cancel(Map<String,Order> orders, HttpServletRequest request) {
+		try {
+			//1 得到最终确认订单与明细 持久化到mysql
+			Order order = orders.get("content");
+			orderService.dao().insertWith(order, "orderDetails");
+			//2 持久内存
+			activitySnappingUpService.confirmSnapupResult(order);
+		} catch (Exception e) {
+			return Result.err("确认订单失败");
+		}
+		return Result.ok();
+	}
+}

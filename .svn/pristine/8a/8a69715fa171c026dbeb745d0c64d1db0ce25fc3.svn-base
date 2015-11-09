@@ -1,0 +1,267 @@
+package m.w.frs.mgserver.domain;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import m.w.core.dao.IdEntity;
+import m.w.sys.domain.Constable;
+import m.w.sys.util.WrapSupport;
+
+import org.nutz.dao.entity.annotation.ColDefine;
+import org.nutz.dao.entity.annotation.ColType;
+import org.nutz.dao.entity.annotation.Column;
+import org.nutz.dao.entity.annotation.Comment;
+import org.nutz.dao.entity.annotation.Id;
+import org.nutz.dao.entity.annotation.Table;
+
+@Table("tbl_order")
+@Comment("订单表")
+public class Order extends WrapSupport implements Serializable,
+		IdEntity, Constable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8470263626963122171L;
+
+
+	@Override
+	public Map<String, String> getConstFieldMap() {
+		Map<String, String> fm = new HashMap<String, String>();
+		// fm.put("type", "typeText");
+		// fm.put("status", "statusText");
+
+		return fm;
+	}
+	
+	@Id
+	@Column
+	private Long id;
+
+	/** 活动Id */
+	@Column("activityId")
+	protected Long activityId;
+	
+	/** 商品code */
+	@Column("productCode")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1000)
+	protected String productCode;
+	
+	/** 抢购数量 */
+	@Column("count")
+	protected int count;
+	
+	@Column
+	private BigDecimal price;// 价格
+	
+	
+	/** order code */
+	@Column("orderCode")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1000)
+	protected String orderCode;
+	
+	/** order 时间 */
+	@Column("orderTime")
+	@ColDefine(notNull = false, type = ColType.DATETIME)
+	protected Date orderTime;	
+	
+	
+	/** 提交人*/
+	@Column("submitPerson")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1000)
+	protected String submitPerson;
+	
+	/** 审核人*/
+	@Column("reviewerName")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1000)
+	protected String reviewerName;
+	
+	/** 收货人*/
+	@Column("receiverInfo")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String receiverInfo;
+	
+	/** 收货人 user id*/
+	@Column("receiverId")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String receiverId;
+	
+	/** 收货人电话*/
+	@Column("receiverPhone")
+	@ColDefine(notNull = false, type = ColType.VARCHAR, width = 1500)
+	protected String receiverPhone;
+	
+	/** 收货人电话*/
+	@Column("orderId")
+	protected String orderId;
+	
+	/** 状态 */
+	@Column("status")
+	protected Status status;
+	
+	/** 类型 */
+	@Column("orderType")
+	protected OrderType orderType;
+	
+	/** 支付方式 */
+	@Column("payType")
+	protected PayType payType;
+	
+	/** 支付流水号 */
+	@Column("payCode")
+	protected String payCode;
+	
+	public Long getId() {
+		return id;
+	}
+
+
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+
+
+	public Long getActivityId() {
+		return activityId;
+	}
+
+
+
+	public void setActivityId(Long activityId) {
+		this.activityId = activityId;
+	}
+
+
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+
+
+	public int getCount() {
+		return count;
+	}
+
+
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+
+
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+
+
+
+	public String getOrderCode() {
+		return orderCode;
+	}
+
+
+
+	public void setOrderCode(String orderCode) {
+		this.orderCode = orderCode;
+	}
+
+
+
+	public Date getOrderTime() {
+		return orderTime;
+	}
+
+
+
+	public void setOrderTime(Date orderTime) {
+		this.orderTime = orderTime;
+	}
+
+
+
+	public String getSubmitPerson() {
+		return submitPerson;
+	}
+
+
+
+	public void setSubmitPerson(String submitPerson) {
+		this.submitPerson = submitPerson;
+	}
+
+
+
+	public Status getStatus() {
+		return status;
+	}
+
+
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
+
+
+	public enum Status {
+		STOP(0), NORMAL(1);
+
+		private final Integer value;
+
+		Status(Integer value) {
+			this.value = value;
+		}
+
+		public Integer getValue() {
+			return value;
+		}
+	}
+	
+	public enum OrderType {
+		STOP(0), NORMAL(1);
+
+		private final Integer value;
+
+		OrderType(Integer value) {
+			this.value = value;
+		}
+
+		public Integer getValue() {
+			return value;
+		}
+	}
+	
+	public enum PayType {
+		weixin(0), zhifubao(1);
+
+		private final Integer value;
+
+		PayType(Integer value) {
+			this.value = value;
+		}
+
+		public Integer getValue() {
+			return value;
+		}
+	}
+}

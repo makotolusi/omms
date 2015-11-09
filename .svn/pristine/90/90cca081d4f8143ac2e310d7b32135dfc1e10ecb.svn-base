@@ -1,0 +1,94 @@
+package m.w.frs.mgserver.domain;
+
+import m.w.sys.util.Consts;
+
+public class SnapUp {
+
+	public static final String STOCK = "stock";
+	
+	private Integer activityId;
+	private Integer count;
+	private String productCode;
+	private String token;
+	private boolean success;
+	private int stock;
+	private String key;
+
+	
+	public SnapUp(Integer activityId, String productCode, String token) {
+		super();
+		this.activityId = activityId;
+		this.productCode = productCode;
+		this.token = token;
+	}
+
+	public SnapUp(boolean success, int stock, String key) {
+		super();
+		this.success = success;
+		this.stock = stock;
+		this.key = key;
+	}
+
+	public boolean isSuccess() {
+		return success;
+	}
+
+	public void setSuccess(boolean success) {
+		this.success = success;
+	}
+
+	public int getStock() {
+		return stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
+
+	public Integer getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(Integer activityId) {
+		this.activityId = activityId;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+	
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	public String getStockKey(){
+		return Consts.REDIS_STOCK+this.getActivityId()+":"+this.getProductCode();
+	}
+	public String getOrderKey(){
+		return Consts.REDIS_ORDER+this.getActivityId()+":"+this.getProductCode()+":"+this.getToken();
+	}
+}

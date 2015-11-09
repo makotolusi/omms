@@ -1,0 +1,47 @@
+package m.w.frs.mgserver.service;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import m.w.frs.mgserver.domain.Activity;
+import m.w.frs.mgserver.domain.Product;
+import m.w.frs.mgserver.domain.SnapUp;
+import m.w.sys.util.Consts;
+import m.w.sys.util.JedisTemplate;
+
+import org.nutz.ioc.loader.annotation.IocBean;
+
+@IocBean(fields = "dao")
+public class ActivityProductCacheService {
+
+	public void addActivityProduct(Activity activity,Product product){
+		String key=Consts.REDIS_STOCK+activity.getId()+":"+product.getProductCode();
+		Map<String,String> map=new HashMap<>();
+		map.put(SnapUp.STOCK, product.getQuantity()+"");
+		map.put("unpaid","");
+		map.put("price","");
+		JedisTemplate.hmset(key, map);
+	}
+	
+//	public void getActivityProducts(int activityId){
+//		String key=Consts.REDIS_STOCK+activity.getId()+":"+product.getProductCode();
+//		Map<String,String> map=new HashMap<>();
+//		map.put(SnapUp.STOCK, product.getQuantity()+"");
+//		map.put("unpaid","");
+//		map.put("price","");
+//		JedisTemplate.hmset(key, map);
+//	}
+	
+	public static void main(String[] args) {
+		ActivityProductCacheService ap=new ActivityProductCacheService();
+		Activity activity=new Activity();
+		activity.setId(10L);
+		Product product=new Product();
+		product.setQuantity(100);
+		product.setProductCode("A0002");
+		product.setPrice(new BigDecimal(10000));
+		ap.addActivityProduct(activity, product);
+//		s.snapup("lusi1", 5);
+	}
+}

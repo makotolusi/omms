@@ -1,0 +1,49 @@
+package m.w.frs.mgserver.module;
+
+import java.util.Iterator;
+import java.util.List;
+
+import m.w.core.dto.DataGrid;
+import m.w.frs.mgserver.domain.OrderDetail;
+import m.w.frs.mgserver.service.ProductService;
+import m.w.frs.mgserver.service.snapup.OrderDetailService;
+import m.w.frs.mgserver.service.snapup.OrderService;
+
+import org.nutz.dao.Cnd;
+import org.nutz.ioc.loader.annotation.Inject;
+import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.mvc.annotation.At;
+
+@At("/order")
+@IocBean
+public class OrderModule {
+
+	@Inject
+	private OrderService orderService;
+	
+	@Inject
+	private OrderDetailService orderDetailService;
+	
+	@Inject
+	private ProductService productService;
+	/**
+	 * list order info
+	 * */
+	@At({ "/items" })
+	public DataGrid items() {
+		return orderService.datagrid();
+	}
+	
+	@At({ "/detail/items", "/detail/items/?" })
+	public DataGrid detailitems(Long orderId) {
+		DataGrid d= orderDetailService.datagrid(Cnd.where("orderId", "=", orderId));
+		List<OrderDetail> list=(List<OrderDetail>)d.getRows();
+		for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+			OrderDetail orderDetail = (OrderDetail) iterator.next();
+			orderDetail=orderDetailService.dao().fetchLinks(orderDetail, "activity");
+			orderDetail.setProduct(productService.fetch(Cnd.where("productCode", "=", orderDetail.getProductCode())));
+		}
+		d.setRows(list);
+		return d;
+	}
+}

@@ -1,0 +1,148 @@
+package m.w.frs.mgserver.module.rest;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import m.w.core.dto.Result;
+import m.w.frs.mgserver.domain.Order;
+import m.w.frs.mgserver.domain.Order.PayType;
+import m.w.frs.mgserver.domain.OrderDetail;
+import m.w.frs.mgserver.service.snapup.ActivitySnappingUpService;
+import m.w.frs.mgserver.service.snapup.OrderService;
+import m.w.sys.util.MirrorUtils;
+import m.w.sys.util.RedisManager;
+
+import org.nutz.ioc.loader.annotation.Inject;
+import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.json.Json;
+import org.nutz.log.Log;
+import org.nutz.log.Logs;
+import org.nutz.mvc.annotation.At;
+import org.nutz.mvc.annotation.GET;
+import org.nutz.mvc.annotation.POST;
+
+@At("/ApCommonServices/SnapUpServices/")
+@IocBean
+public class SnapUpAppServices {
+
+	@Inject
+	private ActivitySnappingUpService activitySnappingUpService;
+
+	@Inject
+	private OrderService orderService;
+
+	private static final Log log = Logs.getLog(SnapUpAppServices.class);
+
+	/** 抢购 */
+	@At
+	@POST
+	// @Filters({ @By(type = AuthFilter.class) })
+	public Object snapup(HttpServletRequest request) {
+		// 1 得到订单
+		String receivedObject = request.getParameter("content");
+		Order order = (Order) MirrorUtils.convertJsontoBean(receivedObject,
+				Order.class);
+		if (order == null) {
+			return Result.err("订单解析错误");
+		}
+		// orderService.dao().insertWith(order, "orderDetails");
+		// 开始抢购 返回结果
+		Order result = activitySnappingUpService
+				.snapUpOrder(order);
+		Result r = new Result();
+		if (result.getOrderDetails().isEmpty()) {
+			r.setSuccess(true);
+			return r;
+		} else {
+			r.setData(result);
+			return r;
+		}
+	}
+
+	/** 确认订单明细 支付 */
+	@At
+	@POST
+	// @Filters({ @By(type = AuthFilter.class) })
+	public Result confirm(HttpServletRequest request) {
+		try {
+			// 1 得到最终确认订单与明细 持久化到mysql
+			String receivedObject = request.getParameter("content");
+			Order order = (Order) MirrorUtils.convertJsontoBean(receivedObject, Order.class);
+			orderService.dao().insertWith(order, "orderDetails");
+			// 2 持久内存
+			activitySnappingUpService.confirmSnapupResult(order);
+		} catch (Exception e) {
+			return Result.err("确认订单失败");
+		}
+		return Result.ok();
+	}
+
+	/** 取消订单 恢复库存 */
+	@At
+	@POST
+	// @Filters({ @By(type = AuthFilter.class) })
+	public Result cancel(HttpServletRequest request) {
+		try {
+			String receivedObject = request.getParameter("content");
+			Order order = (Order) MirrorUtils.convertJsontoBean(receivedObject, Order.class);
+			if (order == null) {
+				return Result.err("订单解析错误");
+			}
+			List<OrderDetail> orderDetails = order.getOrderDetails();
+			for (Iterator iterator = orderDetails.iterator(); iterator
+					.hasNext();) {
+				OrderDetail orderDetail = (OrderDetail) iterator.next();
+				orderDetail.setOrderCode(order.getOrderCode());
+				log.info("order key " + orderDetail.getOrderDetailKey());
+				// 是否存在订单
+				if (RedisManager.exists(orderDetail.getOrderDetailKey())) {
+					// 恢复库存
+					activitySnappingUpService.add(orderDetail);
+					// 删除内存中的cancel订单
+					RedisManager.del(orderDetail.getOrderDetailKey());
+				}
+			}
+
+		} catch (Exception e) {
+			return Result.err("确认订单失败");
+		}
+		return Result.ok();
+	}
+
+	/*
+	 * 测试方法
+	 */
+	@At
+	@GET
+	public void testSnapUpOrder() {
+
+		Order order = new Order();
+//		order.setOrderCode("frx1442132867199");
+		order.setPayType(PayType.ZHIFUBAO);
+		order.setReceiverId("1");
+		order.setReviewerName("陆思");
+		order.setReceiverPhone("13522181925");
+		order.setSubmitPerson("13522181922");
+		order.setTotalCount(3);
+		order.setTotalPrice(new BigDecimal(2));
+
+		List<OrderDetail> l = new ArrayList<>();
+		OrderDetail od = new OrderDetail();
+		od.setProductCode("A00001");
+		od.setCount(3);
+		od.setPrice(new BigDecimal(2));
+		od.setActivityId(12L);
+		l.add(od);
+		order.setOrderDetails(l);
+
+		Order result = activitySnappingUpService
+				.snapUpOrder(order);
+		System.out.println(MirrorUtils.convertBeanToJson(result));
+	}
+
+}

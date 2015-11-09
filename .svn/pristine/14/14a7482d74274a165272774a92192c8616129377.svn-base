@@ -1,0 +1,18 @@
+package m.w.sys.util;
+
+import org.nutz.lang.Mirror;
+
+public class MirrorUtils {
+
+	public static Object getFieldValue(Object obj, Class clazz, String fieldName) {
+		Mirror mirror = Mirror.me(clazz);
+		Object v = "";
+		try {
+			v = mirror.getValue(obj, mirror.getField(fieldName));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "";
+		}
+		return v;
+	}
+}
