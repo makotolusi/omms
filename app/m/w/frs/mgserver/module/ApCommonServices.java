@@ -39,6 +39,7 @@ import m.w.frs.mgserver.service.snapup.ActivitySnappingUpService;
 import m.w.security.AuthFilter;
 import m.w.security.PrivateUtil;
 import m.w.sys.domain.CommerceUser;
+import m.w.sys.quartz.domain.PicConfig;
 import m.w.sys.service.CommerceUserService;
 import m.w.sys.service.PicHandlerService;
 import m.w.sys.util.DateUtils;
@@ -269,6 +270,11 @@ public class ApCommonServices {
 				} else {
 					r = new Result();
 					r.setSuccess(true);
+					
+					String bigImg= picHandlerService.getQiniuPrivateUrl(user.getImgUrl(),new PicConfig("500*500"));
+					String smallImg= picHandlerService.getQiniuPrivateUrl(user.getImgUrl(),new PicConfig("60*60"));
+					user.setImgUrl(bigImg);
+					user.setSmallImgUrl(smallImg);
 					r.setData(MirrorUtils.convertBeanToJson(user));
 					return r;
 				}

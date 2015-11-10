@@ -25,6 +25,8 @@ public class CommerceUser extends WrapSupport implements Serializable,IdEntity,
 		Constable {
 	private static final long serialVersionUID = -6909410061423195974L;
 
+	public static final String IMG_DOMAIN="http://7xjop8.com1.z0.glb.clouddn.com/";
+	
 	@Override
 	public Map<String, String> getConstFieldMap() {
 		Map<String, String> fm = new HashMap<String, String>();
@@ -88,6 +90,11 @@ public class CommerceUser extends WrapSupport implements Serializable,IdEntity,
 	@Column
 	@ColDefine(notNull = false, width = 1000)
 	protected String imgUrl;
+	
+	/**
+	 * 头像图片地址
+	 */
+	protected String smallImgUrl;
 
 	/**
 	 * qq
@@ -279,6 +286,17 @@ public class CommerceUser extends WrapSupport implements Serializable,IdEntity,
 	public void setRole(Role role) {
 		this.role = role;
 	}
+
+
+	
+	public String getSmallImgUrl() {
+		return smallImgUrl;
+	}
+
+	public void setSmallImgUrl(String smallImgUrl) {
+		this.smallImgUrl = smallImgUrl;
+	}
+
 
 
 	public enum Role {

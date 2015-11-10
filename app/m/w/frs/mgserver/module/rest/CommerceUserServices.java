@@ -7,6 +7,7 @@ import m.w.frs.mgserver.domain.UserToken;
 import m.w.frs.mgserver.service.UserTokenService;
 import m.w.security.PrivateUtil;
 import m.w.sys.domain.CommerceUser;
+import m.w.sys.quartz.domain.PicConfig;
 import m.w.sys.service.CommerceUserService;
 import m.w.sys.service.PicHandlerService;
 import m.w.sys.util.MirrorUtils;
@@ -158,8 +159,13 @@ public class CommerceUserServices {
 			CommerceUser user = commerceUserService.fetch(userTokenTmp.getCommerceUserId());
 			if (user!=null) {
 				r.setSuccess(true);
-				user.setImgUrl(url);
+				user.setImgUrl(CommerceUser.IMG_DOMAIN+url);
 				commerceUserService.update(user);
+				String bigImg= picHandlerService.getQiniuPrivateUrl(user.getImgUrl(),new PicConfig("500*500"));
+				String smallImg= picHandlerService.getQiniuPrivateUrl(user.getImgUrl(),new PicConfig("60*60"));
+				user.setImgUrl(bigImg);
+				user.setSmallImgUrl(smallImg);
+				r.setData(user);
 				return r;
 			} else {
 				return r.err();
