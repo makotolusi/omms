@@ -264,6 +264,14 @@ public class ApCommonServices {
 		}
 		try {
 			UserToken userTokenTmp = userTokenService.getByToken(token);
+			if(userTokenTmp.getCommerceUserId()==null){
+				r = new Result();
+				r.setSuccess(true);
+				Map m=new HashMap();
+				m.put("code", "001");
+				r.setAttr(m);
+				return r;
+			}
 			CommerceUser user=	commerceUserService.getUserByToken(userTokenTmp);
 				if (user == null) {
 					return r;

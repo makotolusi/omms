@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.nutz.dao.Chain;
+import org.nutz.dao.Cnd;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.log.Log;
@@ -106,6 +108,8 @@ public class SnapUpAppServices {
 			if (order == null) {
 				return Result.err("订单解析错误");
 			}
+			order.setStatus(Order.Status.CANCEL);	
+			orderService.dao().update(Order.class, Chain.make("status",Order.Status.CANCEL), Cnd.where("orderCode","=",order.getOrderCode()));
 			List<OrderDetail> orderDetails = order.getOrderDetails();
 			for (Iterator iterator = orderDetails.iterator(); iterator
 					.hasNext();) {
